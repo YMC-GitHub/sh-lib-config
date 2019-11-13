@@ -12,11 +12,10 @@ declare -A dic
 #设置二维数组
 dic=()
 
-#fix:cat: ./help.txt: No such file or directory
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
-USAGE_MSG_PATH=${THIS_FILE_PATH}
+USAGE_MSG_PATH=${THIS_FILE_PATH}/help
 # 帮助信息
-USAGE_MSG_FILE=${USAGE_MSG_PATH}/help.txt
+USAGE_MSG_FILE=${USAGE_MSG_PATH}/from-a-config-file.txt
 
 # 参数规则
 GETOPT_ARGS_SHORT_RULE="--options hf::"
