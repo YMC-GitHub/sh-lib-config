@@ -12,8 +12,11 @@ declare -A dic
 #设置二维数组
 dic=()
 
+#fix:cat: ./help.txt: No such file or directory
+THIS_FILE_PATH=$(cd `dirname $0`; pwd)
+USAGE_MSG_PATH=${THIS_FILE_PATH}
 # 帮助信息
-USAGE_MSG_FILE=./help.txt
+USAGE_MSG_FILE=${USAGE_MSG_PATH}/help.txt
 
 # 参数规则
 GETOPT_ARGS_SHORT_RULE="--options hf::"
@@ -147,6 +150,8 @@ bash ./from-a-config-file.sh --file=a-config-file-2.txt
 shell-get-config/from-a-config-file.sh --file=a-config-file-2.txt
 #获取帮助
 ./from-a-config-file.sh --help
+
+shell-get-config/from-a-config-file.sh --help
 how-to-use-for-pro
 
 # 生成序列数组性能比较
