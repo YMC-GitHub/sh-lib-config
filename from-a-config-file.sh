@@ -19,8 +19,8 @@ USAGE_MSG_PATH=${THIS_FILE_PATH}/help
 USAGE_MSG_FILE=${USAGE_MSG_PATH}/from-a-config-file.txt
 
 # 参数规则
-GETOPT_ARGS_SHORT_RULE="--options hf::"
-GETOPT_ARGS_LONG_RULE="--long help,file::"
+GETOPT_ARGS_SHORT_RULE="--options h,f::,d"
+GETOPT_ARGS_LONG_RULE="--long help,file::,debug"
 
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
@@ -41,6 +41,9 @@ do
     cat $USAGE_MSG_FILE
     exit 1
     ;;
+    -d|--debug) #可选，不接参数
+    IS_DEBUG_MODE=true
+    ;;
     --)
     break
     ;;
@@ -50,12 +53,20 @@ do
     esac
 done
 
+function ouput_debug_msg(){
+local debug_msg=$1
+if [[ "$IS_DEBUG_MODE" =~ "true" ]] ; 
+then 
+    echo $debug_msg ; 
+fi 
+}
+
 if [[ "$CONFIG_FILE" =~ "^/" ]] ;
 then
-    echo "absolute path"
+    ouput_debug_msg "absolute path"
 else
     CONFIG_FILE=$(echo $CONFIG_FILE | sed "s#./##g")
-    echo "will read custom file in relative path:$THIS_FILE_PATH/$CONFIG_FILE"
+    ouput_debug_msg "will read custom file in relative path:$THIS_FILE_PATH/$CONFIG_FILE"
     CONFIG_FILE=$THIS_FILE_PATH/$CONFIG_FILE
 fi
 #处理剩余的参数
@@ -116,7 +127,7 @@ echo "read custom config:..."
 #fix: No such file or directory
 if [[ -n $CONFIG_FILE && -e $CONFIG_FILE ]]
 then
-    echo "read the file passed by cli args $CONFIG_FILE"
+    #echo "read the file passed by cli args $CONFIG_FILE"
     read_config_file $CONFIG_FILE
 fi
 
