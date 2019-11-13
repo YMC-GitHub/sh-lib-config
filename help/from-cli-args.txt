@@ -1,0 +1,31 @@
+read config passed with cli args
+args:
+  -s,--sdate options,passed arg with necessary value
+  -e,--edate options,passed arg with optional value
+  -n,--numprocs deoption,passed arg without value
+  -h,--help options,get the cmd help
+examples: 
+  run as shell args
+bash ./from-cli-args.sh
+  run as runable application
+./from-cli-args.sh --sdate=hi 
+
+  without args: 
+./from-cli-args.sh 
+  with args: 
+./from-cli-args.sh --sdate=hi
+
+passed args:
+  passed arg with necessary value
+./from-cli-args.sh --sdate hi
+  or
+./from-cli-args.sh --edate=hi
+  passed arg with optional value
+./from-cli-args.sh --edate=hello
+  but not(can not passed args with optional value like this)
+./from-cli-args.sh --edate hello 
+  passed arg without value
+./from-cli-args.sh --numprocs 
+
+get help: 
+./from-cli-args.sh --help
