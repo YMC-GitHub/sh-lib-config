@@ -12,3 +12,7 @@ bash ./from-a-config-file.sh
 ./from-a-config-file.sh 
   with args: 
 ./from-a-config-file.sh --file=a-config-file-2.txt
+
+  with debug mode: 
+./from-a-config-file.sh --debug
+
