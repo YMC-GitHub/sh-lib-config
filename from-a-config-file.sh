@@ -13,15 +13,7 @@ declare -A dic
 dic=()
 
 # 帮助信息
-USAGE_MSG="args:\
-  -f,--file options,set the config file\
-  -h,--help options,get the cmd help\
-examples: \
-without args: \
-./from-a-config-file.sh \
-with args: \
-./from-a-config-file.sh --file=a-config-file-2.txt \
-"
+USAGE_MSG_FILE=./help.txt
 
 # 参数规则
 GETOPT_ARGS_SHORT_RULE="--options hf::"
@@ -43,7 +35,7 @@ do
     shift 2
     ;;
     -h|--help) #可选，不接参数
-    printf "$USAGE_MSG"
+    cat $USAGE_MSG_FILE
     exit 1
     ;;
     --)
