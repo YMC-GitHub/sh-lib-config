@@ -13,6 +13,7 @@ declare -A dic
 dic=()
 
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
+echo $THIS_FILE_PATH
 USAGE_MSG_PATH=${THIS_FILE_PATH}/help
 # 帮助信息
 USAGE_MSG_FILE=${USAGE_MSG_PATH}/from-a-config-file.txt
@@ -33,7 +34,7 @@ do
     case $1 in
     -f|--file) #可选，可接可不接参数
     CONFIG_FILE=$2
-    echo $CONFIG_FILE 
+    #echo $CONFIG_FILE 
     shift 2
     ;;
     -h|--help) #可选，不接参数
@@ -48,6 +49,15 @@ do
     ;;
     esac
 done
+
+if [[ "$CONFIG_FILE" =~ "^/" ]] ;
+then
+    echo "absolute path"
+else
+    CONFIG_FILE=$(echo $CONFIG_FILE | sed "s#./##g")
+    echo "will read custom file in relative path:$THIS_FILE_PATH/$CONFIG_FILE"
+    CONFIG_FILE=$THIS_FILE_PATH/$CONFIG_FILE
+fi
 #处理剩余的参数
 :<<handle-rest-args
 for arg in $@
@@ -57,7 +67,8 @@ done
 handle-rest-args
 
 function read_config_file(){
-local CONFIG_FILE=a-config-file.txt
+# echo ${THIS_FILE_PATH}
+local CONFIG_FILE=${THIS_FILE_PATH}/a-config-file.txt
 if [ -n "${1}" ]
 then
     CONFIG_FILE=$1
@@ -83,23 +94,9 @@ echo "read confifg file:$CONFIG_FILE"
 # read_config_file a-config-file-2.txt 
 
 #读取配置文件
-:<<read_config_file_with_some_states
-#创建一串字符
-#test='status=OK key1=value1 key2=value2'
-test=`sed 's/^ *//g' a-config-file.txt | grep --invert-match "^#"`
-#字符转为数组
-arr=($test)
-for i in "${arr[@]}"; do
-    # 获取键名
-    key=`echo $i|awk -F'=' '{print $1}'`
-    # 获取键值
-    value=`echo $i|awk -F'=' '{print $2}'`
-    # 输出该行
-    #printf "%s\t\n" "$i"
-    dic+=([$key]=$value)
-done
-read_config_file_with_some_states
 echo "read built-in config:..."
+#fix sed: can't read a-config-file.txt: No such file or directory with index.sh
+
 read_config_file
 
 #2输出某个键值
