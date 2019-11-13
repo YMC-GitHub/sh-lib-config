@@ -5,7 +5,7 @@
 #cat from-cli-args.sh
 # 赋予权限
 #chmod +x from-cli-args.sh
-# 使用脚本
+# uses script file
 #2 run as bash args
 bash ./from-cli-args.sh --help
 #2 run as runable application

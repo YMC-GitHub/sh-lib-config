@@ -5,7 +5,7 @@
 #cat from-a-config-file.sh
 # 赋予权限
 #chmod +x from-a-config-file.sh
-# 使用脚本
+# uses script file
 #2 run as bash args
 bash ./from-a-config-file.sh --help
 #2 run as runable application
