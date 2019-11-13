@@ -12,6 +12,56 @@ declare -A dic
 #设置二维数组
 dic=()
 
+# 帮助信息
+USAGE_MSG="args:\
+  -f,--file options,set the config file\
+  -h,--help options,get the cmd help\
+examples: \
+without args: \
+./from-a-config-file.sh \
+with args: \
+./from-a-config-file.sh --file=a-config-file-2.txt \
+"
+
+# 参数规则
+GETOPT_ARGS_SHORT_RULE="--options hf::"
+GETOPT_ARGS_LONG_RULE="--long help,file::"
+
+# 设置参数规则
+GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
+$GETOPT_ARGS_LONG_RULE -- "$@"`
+# 解析参数规则
+eval set -- "$GETOPT_ARGS"
+# 更新新的配置
+CONFIG_FILE=
+while [ -n "$1" ]
+do
+    case $1 in
+    -f|--file) #可选，可接可不接参数
+    CONFIG_FILE=$2
+    echo $CONFIG_FILE 
+    shift 2
+    ;;
+    -h|--help) #可选，不接参数
+    printf "$USAGE_MSG"
+    exit 1
+    ;;
+    --)
+    break
+    ;;
+    *)
+    printf "$USAGE_MSG"
+    ;;
+    esac
+done
+#处理剩余的参数
+:<<handle-rest-args
+for arg in $@
+do
+    echo "processing $arg"
+done
+handle-rest-args
+
 function read_config_file(){
 local CONFIG_FILE=a-config-file.txt
 if [ -n "${1}" ]
@@ -70,42 +120,6 @@ ouput-one-key-val-for-debug
 #2输出整个配置
 #echo ${dic[*]}
 
-
-# 参数规则
-GETOPT_ARGS_SHORT_RULE="--options f::"
-GETOPT_ARGS_LONG_RULE="--long file::"
-
-# 设置参数规则
-GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
-$GETOPT_ARGS_LONG_RULE -- "$@"`
-# 解析参数规则
-eval set -- "$GETOPT_ARGS"
-# 更新新的配置
-CONFIG_FILE=
-while [ -n "$1" ]
-do
-    case $1 in
-    -f|--file)
-    CONFIG_FILE=$2
-    echo $CONFIG_FILE 
-    shift 2
-    ;;
-    --)
-    break
-    ;;
-    *)
-    printf "$USAGE_MSG"
-    ;;
-    esac
-done
-#处理剩余的参数
-:<<handle-rest-args
-for arg in $@
-do
-    echo "processing $arg"
-done
-handle-rest-args
-
 echo "read custom config:..."
 #read_config_file a-config-file-2.txt 
 #fix: No such file or directory
@@ -138,7 +152,9 @@ bash ./from-a-config-file.sh --file=a-config-file-2.txt
 #2 切换到脚本所在目录
 ./from-a-config-file.sh --file=a-config-file-2.txt 
 #2 切换到其他目录执行
-shell-get-config/from-a-config-file.sh --file=a-config-file-2.txt 
+shell-get-config/from-a-config-file.sh --file=a-config-file-2.txt
+#获取帮助
+./from-a-config-file.sh --help
 how-to-use-for-pro
 
 # 生成序列数组性能比较
