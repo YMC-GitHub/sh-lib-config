@@ -108,7 +108,8 @@ handle-rest-args
 
 echo "read custom config:..."
 #read_config_file a-config-file-2.txt 
-if [ -n $CONFIG_FILE ]
+#fix: No such file or directory
+if [[ -n $CONFIG_FILE && -e $CONFIG_FILE ]]
 then
     echo "read the file passed by cli args $CONFIG_FILE"
     read_config_file $CONFIG_FILE
