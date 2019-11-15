@@ -12,11 +12,12 @@ declare -A dic
 #设置二维数组
 dic=()
 
+
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
-echo $THIS_FILE_PATH
-USAGE_MSG_PATH=${THIS_FILE_PATH}/help
+source $THIS_FILE_PATH/path-resolve.sh
 # 帮助信息
-USAGE_MSG_FILE=${USAGE_MSG_PATH}/from-a-config-file.txt
+HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
+USAGE_MSG_FILE=${HELP_DIR}/from-a-config-file.txt
 
 # 参数规则
 GETOPT_ARGS_SHORT_RULE="--options h,f::,d"

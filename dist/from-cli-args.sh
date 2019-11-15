@@ -7,20 +7,14 @@
 # 更新相关变量
 # 显示帮助信息
 
-# 文件路径
-FILE_PATH=$(cd `dirname $0`; pwd) # 脚本所在目录
 
-mkdir -p ~/shell-get-config
-echo "FILE_PATH:${FILE_PATH}" > ~/shell-get-config/debug.log
-# 获取传入参数
-# 保存传入参数
-echo $0,$1,$FILE_PATH
-
-# 帮助信息
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
+source $THIS_FILE_PATH/path-resolve.sh
+
 USAGE_MSG_PATH=${THIS_FILE_PATH}/help
 # 帮助信息
-USAGE_MSG_FILE=${USAGE_MSG_PATH}/from-cli-args.txt
+HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
+USAGE_MSG_FILE=${HELP_DIR}/from-cli-args.txt
 
 # 参数规则
 GETOPT_ARGS_SHORT_RULE="-o h,s:,e::,n"
@@ -77,7 +71,7 @@ echo $sdate,$edate,$numprocs
 
 # 查看某文件的权限
 :<<get-one-file-right
-ONE_FILE=from-cli-agrs.sh
+ONE_FILE=from-cli-args.sh
 ls -l |grep "${ONE_FILE}" | cut --delimiter " " --fields 1
 get-one-file-right
 
@@ -87,17 +81,4 @@ get-one-file-right
 shell脚本传可选参数 getopts 和 getopt的方法
 https://www.cnblogs.com/zhang-xiaoyu/p/9296217.html
 reference
-
-#### 基础用法
-:<<how-to-use-for-pro
-#作为解释器参数
-bash ./from-cli-agrs.sh
-bash ./from-cli-agrs.sh -s hi
-bash ./from-cli-agrs.sh -s hi --cfile yemiancheng
-#作为可执行程序
-#2 切换到脚本所在目录
-./from-cli-agrs.sh -s hi --cfile yemiancheng
-#2 切换到其他目录执行
-shell-get-config/from-cli-agrs.sh -s hi --cfile yemiancheng
-how-to-use-for-pro
 
