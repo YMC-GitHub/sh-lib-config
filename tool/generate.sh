@@ -326,10 +326,21 @@ THIS_FILE_PATH=\$(cd \`dirname \$0\`; pwd)
 source \$THIS_FILE_PATH/path-resolve.sh
 EOF
 
+ouput_debug_msg "工程目录信息" "true"
+cat >> $OUTPUT_FILE << EOF
+# 工程目录信息
+PROJECT_DIR=\$(path_resolve \$THIS_FILE_PATH "../")
+HELP_DIR=\$(path_resolve \$THIS_FILE_PATH "../help")
+SRC_DIR=\$(path_resolve \$THIS_FILE_PATH "../src")
+TEST_DIR=\$(path_resolve \$THIS_FILE_PATH "../test")
+DIST_DIR=\$(path_resolve \$THIS_FILE_PATH "../dist")
+DOCS_DIR=\$(path_resolve \$THIS_FILE_PATH "../docs")
+TOOL_DIR=\$(path_resolve \$THIS_FILE_PATH "../tool")
+EOF
+
 ouput_debug_msg "参数帮助信息" "true"
 cat >> $OUTPUT_FILE << EOF
 # 参数帮助信息
-HELP_DIR=\$(path_resolve \$THIS_FILE_PATH "../help")
 USAGE_MSG_PATH="\$HELP_DIR"
 USAGE_MSG_FILE="\${HELP_DIR}/$FILE_NAME.txt"
 EOF
