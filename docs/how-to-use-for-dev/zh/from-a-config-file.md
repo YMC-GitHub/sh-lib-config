@@ -12,5 +12,5 @@ bash ./from-a-config-file.sh --help
 #3 切换到脚本所在目录
 ./from-a-config-file.sh --help
 #3 切换到其他目录执行
-path/to/shell-get-config/from-a-config-file.sh --help
+path/to/from-a-config-file.sh --help
 ```

@@ -12,5 +12,5 @@ bash ./from-cli-args.sh --help
 #3 切换到脚本所在目录
 ./from-cli-args.sh --help
 #3 切换到其他目录执行
-path/to/shell-get-config/from-cli-args.sh --help
+path/to/from-cli-args.sh --help
 ```
