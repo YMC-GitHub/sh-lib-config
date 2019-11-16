@@ -120,7 +120,7 @@ EOF
 
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d"
-GETOPT_ARGS_LONG_RULE="--long help,debug,--file-name:,file-path:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,file-name:,file-path:"
 
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
@@ -170,17 +170,37 @@ OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
 
 # add multi line text to a var
 ouput_debug_msg "生成输入文件 ..." "true"
-ARG_LIST=$(cat<<ARG-LIST-EOF
---vm-name
---old-vm-ip
---new-vm-ip
---path-delimeter-char
---key-file-name
---key-file-path
---old-vm-user
+ARG_LIST_DESC=$(cat<<ARG-LIST-EOF
+  -s,--sdate optional,passed arg with necessary value
+  -e,--edate optional,passed arg with optional value
+  -n,--numprocs optional,passed arg without value
 ARG-LIST-EOF
 )
+ARG_LIST=$(echo "$ARG_LIST_DESC" |sed "s/-.,//g" |sed "s/optional.*//g")
+#echo "$ARG_LIST_DESC"
 #echo "$ARG_LIST"
+ARG_SHORT_LONG_MAP=$(echo "$ARG_LIST_DESC" |sed "s/optional.*//g"| sed "s/ *//g"| sed "s/,/=/g")
+#echo "$ARG_SHORT_LONG_MAP"
+
+declare -A DIC_ARG_SHORT_LONG_MAP
+DIC_ARG_SHORT_LONG_MAP=()
+test=`echo $ARG_SHORT_LONG_MAP`
+#echo $test
+slpit_char=" "
+#字符转为数组
+arr=(${test//$slpit_char/ }) 
+key=
+value=
+for i in "${arr[@]}"; do
+    
+    # 获取键值：小写+中划
+    value=`echo $i |cut -d "=" -f 1 |tr "[:upper:]" "[:lower:]" |sed "s/-//g"`
+    # 获取键名:小写
+    key=`echo $i |cut -d "=" -f 2|tr "[:upper:]" "[:lower:]" |sed "s/--//g"`
+    #echo $key,$value
+    DIC_ARG_SHORT_LONG_MAP+=([$key]=$value)
+done
+#echo "${DIC_ARG_SHORT_LONG_MAP['sdate']}"
 
 ouput_debug_msg "读取输入文件 ..." "true"
 declare -A dic
@@ -249,26 +269,43 @@ fi
 }
 EOF
 
+
+ouput_debug_msg "引入相关文件" "true"
+cat >> $OUTPUT_FILE << EOF
+# 引入相关文件
+THIS_FILE_PATH=\$(cd \`dirname \$0\`; pwd)
+source \$THIS_FILE_PATH/path-resolve.sh
+EOF
+
 ouput_debug_msg "参数帮助信息" "true"
 cat >> $OUTPUT_FILE << EOF
 # 参数帮助信息
-THIS_FILE_PATH=\$(cd \`dirname \$0\`; pwd)
-USAGE_MSG_PATH=\${THIS_FILE_PATH}/help
-USAGE_MSG_FILE=\${USAGE_MSG_PATH}/$FILE_NAME.txt
+HELP_DIR=\$(path_resolve \$THIS_FILE_PATH "../help")
+USAGE_MSG_PATH="\$HELP_DIR"
+USAGE_MSG_FILE="\${HELP_DIR}/$FILE_NAME.txt"
 EOF
 
 ouput_debug_msg "参数规则内容" "true"
+ARGS_RULE_SHORT_TXT=
+for i in $(echo ${DIC_ARG_SHORT_LONG_MAP[*]})
+do
+    # 小写
+    key=`echo $i|tr "[:upper:]" "[:lower:]"`
+    ARGS_RULE_SHORT_TXT="${ARGS_RULE_SHORT_TXT}${key}:,"
+done
+ARGS_RULE_SHORT_TXT=$(echo $ARGS_RULE_SHORT_TXT | sed "s/,$//g")
+
 ARGS_RULE_TXT=""
 for i in $(echo ${!dic[*]})
 do
     # 小写+中划
-    #key=`echo $i|tr "[:upper:]" "[:lower:]"  | sed "s/--//g"`
+    key=`echo $i|tr "[:upper:]" "[:lower:]"  | sed "s/--//g"`
     ARGS_RULE_TXT="${ARGS_RULE_TXT}${key}:,"
 done
 ARGS_RULE_TXT=$(echo $ARGS_RULE_TXT | sed "s/,$//g")
 
 ARGS_RULE_TXT=$(cat<<ARG-LIST-EOF
-GETOPT_ARGS_SHORT_RULE="--options h,d"
+GETOPT_ARGS_SHORT_RULE="--options h,d,$ARGS_RULE_SHORT_TXT"
 GETOPT_ARGS_LONG_RULE="--long help,debug,$ARGS_RULE_TXT"
 ARG-LIST-EOF
 )
@@ -303,15 +340,25 @@ do
     key="$i"
     # 大写+下划+前缀
     val=${dic[$i]}
+    short_val=${DIC_ARG_SHORT_LONG_MAP[$key]}
+    if [ -n "$short_val" ] ; 
+    then 
+
+        key="-$short_val|--$key";
+    else
+        key="--$key";
+    fi
+    #echo $key
     PARSE_ARGS_TXT=$(cat<<ARG-LIST-EOF
 $PARSE_ARGS_TXT
-    --$key)
+    $key)
     $val=\$2
     shift 2
     ;;
 ARG-LIST-EOF
 )
 done
+
 PARSE_ARGS_TXT=$(cat<<ARG-LIST-EOF
 $PARSE_ARGS_TXT
     -h|--help)
@@ -372,6 +419,22 @@ cat >> $OUTPUT_FILE << EOF
 $UPDATE_BUILT_IN_CONFIG_TXT
 EOF
 
+ouput_debug_msg "输出内置变量" "true"
+BUIT_IN_VAR_TXT=
+for i in $(echo ${!dic[*]})
+do
+    # 大写+下滑
+    key=`echo $i|tr "[:lower:]" "[:upper:]" | sed "s/-/_/g"`
+    BUIT_IN_VAR_TXT="${BUIT_IN_VAR_TXT},${key}"
+done
+BUIT_IN_VAR_TXT=$(echo $BUIT_IN_VAR_TXT | sed "s/,/,$/g" |sed "s/^,//g" )
+#echo $BUIT_IN_VAR_TXT
+
+cat >> $OUTPUT_FILE << EOF
+# 输出内置变量
+ouput_debug_msg "ouput built-in var..." "true"
+echo $BUIT_IN_VAR_TXT
+EOF
 
 ouput_debug_msg "计算相关变量" "true"
 cat >> $OUTPUT_FILE << EOF
@@ -384,6 +447,7 @@ cat >> $OUTPUT_FILE << EOF
 # 生成相关目录
 ouput_debug_msg "generate relations dir and file ..." "true"
 EOF
+
 
 ouput_debug_msg "文档基本用法" "true"
 cat >> $OUTPUT_FILE << EOF
