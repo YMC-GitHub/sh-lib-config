@@ -12,5 +12,5 @@ bash ./from-a-config-file.sh --help
 #3 cd to file dir
 ./from-a-config-file.sh --help
 #3 cd to other dir
-path/to/shell-get-config/from-a-config-file.sh --help
+path/to/from-a-config-file.sh --help
 ```

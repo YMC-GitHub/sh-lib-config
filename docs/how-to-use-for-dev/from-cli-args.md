@@ -12,5 +12,5 @@ bash ./from-cli-args.sh --help
 #3 cd to file dir
 ./from-cli-args.sh --help
 #3 cd to other dir
-path/to/shell-get-config/from-cli-args.sh --help
+path/to/from-cli-args.sh --help
 ```

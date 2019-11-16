@@ -3,10 +3,10 @@
 ```sh
 # 使用脚本
 #2 作为解释器参数
-bash ./from-cli-agrs.sh --help
+bash ./from-cli-args.sh --help
 #2 作为可执行程序
 #3 切换到脚本所在目录
-./from-cli-agrs.sh --help
+./from-cli-args.sh --help
 #3 切换到其他目录执行
-path/to/shell-get-config/from-cli-agrs.sh --help
+path/to/from-cli-args.sh --help
 ```
