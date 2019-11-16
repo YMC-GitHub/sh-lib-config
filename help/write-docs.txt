@@ -1,0 +1,21 @@
+genarate basic sh file
+args:
+  --project-dir optional,set the project name
+  -d,--debug optional,set the debug mode
+  -h,--help optional,get the cmd help
+examples: 
+  run as shell args
+bash ./write-docs.sh
+  run as runable application
+./write-docs.sh --project-dir eth0
+
+  without args: 
+./write-docs.sh 
+  with args: 
+./write-docs.sh --project-dir eth0
+
+  with debug mode: 
+./write-docs.sh --debug
+
+get help: 
+./write-docs.sh --help
