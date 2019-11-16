@@ -1,0 +1,10 @@
+# format:ip hostname
+#192.168.1.2 k8s-master
+#192.168.1.4 k8s-worker-4
+#192.168.1.5 k8s-worker-5
+#192.168.1.6 k8s-worker-6
+
+k8s-master=192.168.1.2
+k8s-worker-4=192.168.1.4
+k8s-worker-5=192.168.1.5
+k8s-worker-6=192.168.1.6
