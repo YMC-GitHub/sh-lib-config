@@ -299,7 +299,7 @@ do
     then
         index=\$[$length-1]
         if [ \$index -le 0 ] ; then index=0; fi
-        unset arr1[$index]  
+        unset arr1[\$index]  
         #echo \${arr1[*]}
         #echo  \$index
     else
@@ -323,7 +323,7 @@ ouput_debug_msg "引入相关文件" "true"
 cat >> $OUTPUT_FILE << EOF
 # 引入相关文件
 THIS_FILE_PATH=\$(cd \`dirname \$0\`; pwd)
-source \$THIS_FILE_PATH/path-resolve.sh
+# source \$THIS_FILE_PATH/path-resolve.sh
 EOF
 
 ouput_debug_msg "工程目录信息" "true"
