@@ -171,14 +171,13 @@ OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
 # add multi line text to a var
 ouput_debug_msg "生成输入文件 ..." "true"
 ARG_LIST_DESC=$(cat<<ARG-LIST-EOF
-  -s,--sdate optional,passed arg with necessary value
-  -e,--edate optional,passed arg with optional value
-  -n,--numprocs optional,passed arg without value
+  --project-dir optional,passed arg with necessary value
 ARG-LIST-EOF
 )
 ARG_LIST=$(echo "$ARG_LIST_DESC" |sed "s/-.,//g" |sed "s/optional.*//g")
 #echo "$ARG_LIST_DESC"
 #echo "$ARG_LIST"
+
 ARG_SHORT_LONG_MAP=$(echo "$ARG_LIST_DESC" |sed "s/optional.*//g"| sed "s/ *//g"| sed "s/,/=/g")
 #echo "$ARG_SHORT_LONG_MAP"
 
@@ -186,6 +185,7 @@ declare -A DIC_ARG_SHORT_LONG_MAP
 DIC_ARG_SHORT_LONG_MAP=()
 test=`echo $ARG_SHORT_LONG_MAP`
 #echo $test
+
 slpit_char=" "
 #字符转为数组
 arr=(${test//$slpit_char/ }) 
@@ -198,7 +198,13 @@ for i in "${arr[@]}"; do
     # 获取键名:小写
     key=`echo $i |cut -d "=" -f 2|tr "[:upper:]" "[:lower:]" |sed "s/--//g"`
     #echo $key,$value
-    DIC_ARG_SHORT_LONG_MAP+=([$key]=$value)
+    length=${#value}
+    if [ $length -gt 1 ]
+    then
+        echo "not short arg" > /dev/null 2>&1
+    else
+        DIC_ARG_SHORT_LONG_MAP+=([$key]=$value)
+    fi
 done
 #echo "${DIC_ARG_SHORT_LONG_MAP['sdate']}"
 
@@ -297,7 +303,7 @@ do
     length=\${#arr1[@]}
     if [ \$val2 = ".." ]
     then
-        index=\$[$length-1]
+        index=\$[\$length-1]
         if [ \$index -le 0 ] ; then index=0; fi
         unset arr1[\$index]  
         #echo \${arr1[*]}
