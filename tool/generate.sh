@@ -1,10 +1,11 @@
 #!/bin/sh
 
-# 定义内置配置
-ARG_LIST=
-THIS_FILE_PATH=$(cd `dirname $0`; pwd)
-FILE_NAME=main
 
+# 定义内置配置
+THIS_FILE_PATH=$(cd `dirname $0`; pwd)
+ARG_LIST=
+FILE_NAME=main
+FILE_PATH=$THIS_FILE_PATH
 
 # 定义内置函数
 function ouput_debug_msg(){
@@ -21,12 +22,62 @@ then
     echo $debug_msg ; 
 fi
 }
+function path_resolve(){
+str1="${1}"
+str2="${2}"
+slpit_char1=/
+slpit_char2=/
+if [[ -n ${3} ]]
+then
+    slpit_char1=${3}
+fi
+if [[ -n ${4} ]]
+then
+    slpit_char2=${4}
+fi
+
+# 路径-转为数组
+arr1=(${str1//$slpit_char1/ }) 
+arr2=(${str2//$slpit_char2/ }) 
+
+# 路径-解析拼接
+#2 遍历某一数组
+#2 删除元素取值
+#2 获取数组长度
+#2 获取数组下标
+#2 数组元素赋值
+
+for val2 in ${arr2[@]}  
+do   
+    length=${#arr1[@]}
+    if [ $val2 = ".." ]
+    then
+        index=$[$length-1]
+        if [ $index -le 0 ] ; then index=0; fi
+        unset arr1[$index]  
+        #echo ${arr1[*]}
+        #echo  $index
+    else
+        index=$length
+        arr1[$index]=$val2
+        #echo ${arr1[*]}
+    fi
+done
+# 路径-转为字符
+str2=''
+for i in ${arr1[@]};do
+  str2=$str2/$i;
+done
+ if [ -z $str2 ] ; then str2="/"; fi
+echo $str2
+}
 
 # 文档帮助信息
 USAGE_MSG=$(cat<<EOF 
 genarate basic sh file
 args:
   --file-name optional,set the ouput file name
+  --file-path optional,set the ouput file path
   -d,--debug optional,set the debug mode
   -h,--help optional,get the cmd help
 examples: 
@@ -52,14 +103,24 @@ $USAGE_MSG
 
 basic usage: 
  set the file name
-./generate.sh ---file-name main
+./generate.sh --file-name main
+
+ set the file path
+ case)set a relative path
+./generate.sh --file-path ../src
+ case)set a absoulte path
+./generate.sh --file-path /
+
+built-in config var:
+FILE_NAME=
+FILE_PATH=
 EOF
 )
 
 
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d"
-GETOPT_ARGS_LONG_RULE="--long help,debug,--file-name:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,--file-name:,file-path:"
 
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
@@ -71,6 +132,10 @@ do
     case $1 in
     --file-name)
     ARG_FILE_NAME=$2
+    shift 2
+    ;;
+    --file-path)
+    ARG_FILE_PATH=$2
     shift 2
     ;;
     -h|--help) #可选，不接参数
@@ -96,8 +161,12 @@ if [ -n "$ARG_FILE_NAME" ]
 then
     FILE_NAME=$ARG_FILE_NAME
 fi
+if [ -n "$ARG_FILE_PATH" ]
+then
+    FILE_PATH=$(path_resolve $FILE_PATH $ARG_FILE_PATH)
+fi
 # 计算相关变量
-OUTPUT_FILE=$THIS_FILE_PATH/$FILE_NAME.sh
+OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
 
 # add multi line text to a var
 ouput_debug_msg "生成输入文件 ..." "true"
