@@ -445,7 +445,7 @@ EOF
 ouput_debug_msg "工程目录信息" "true"
 cat >> $OUTPUT_FILE << EOF
 # 工程目录信息
-PROJECT_DIR=\$(path_resolve \$THIS_FILE_PATH "../")
+PROJECT_PATH=\$(path_resolve \$THIS_FILE_PATH "../")
 HELP_DIR=\$(path_resolve \$THIS_FILE_PATH "../help")
 SRC_DIR=\$(path_resolve \$THIS_FILE_PATH "../src")
 TEST_DIR=\$(path_resolve \$THIS_FILE_PATH "../test")
