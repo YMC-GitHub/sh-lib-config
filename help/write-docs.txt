@@ -1,5 +1,5 @@
 desc:
-  genarate basic sh file
+  genarate basic docs file
 args:
   --project-path optional,set the project path
   -d,--debug optional,set the debug mode
