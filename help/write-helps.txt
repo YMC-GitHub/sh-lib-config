@@ -1,0 +1,24 @@
+desc:
+  write help file for sh file
+args:
+  --project-dir optional,set the project name
+  --file-list optional,set the tpl list file name
+  -d,--debug optional,set the debug mode
+  -h,--help optional,get the cmd help
+how-to-run:
+  run as shell args
+    bash ./write-helps.sh
+  run as runable application
+    ./write-helps.sh --project-dir eth0
+demo-with-args:
+  without-args
+    ok:./write-helps.sh 
+  passed arg with necessary value
+    ok:./write-helps.sh --project-dir eth0
+    ok:./write-helps.sh --project-dir=eth0
+  passed arg with optional value
+  passed arg without value
+how-to-get-help:
+  ok:./write-helps.sh --help
+  ok:./write-helps.sh -h
+  ok:./write-helps.sh --debug
