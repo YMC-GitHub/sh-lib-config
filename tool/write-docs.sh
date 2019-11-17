@@ -10,6 +10,12 @@
 
 # 定义内置变量
 # ...
+FILE_LIST=$(
+cat << EOF
+from-cli-args
+from-a-config-file
+EOF
+)
 # 定义内置函数
 # ...
 function ouput_debug_msg(){
@@ -91,7 +97,7 @@ USAGE_MSG_PATH="$HELP_DIR"
 USAGE_MSG_FILE="${HELP_DIR}/write-docs.txt"
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d,"
-GETOPT_ARGS_LONG_RULE="--long help,debug,project-path:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,file-list:,project-path:"
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
 $GETOPT_ARGS_LONG_RULE -- "$@"`
@@ -101,6 +107,10 @@ eval set -- "$GETOPT_ARGS"
 while [ -n "$1" ]
 do
     case $1 in
+    --file-list)
+    ARG_FILE_LIST=$2
+    shift 2
+    ;;
     --project-path)
     ARG_PROJECT_PATH=$2
     shift 2
@@ -125,7 +135,10 @@ done
 # 处理剩余参数
 ouput_debug_msg "handle the rest args ..." "true"
 # 更新内置变量
-
+if [ -n "$ARG_FILE_LIST" ]
+then
+    FILE_LIST=$ARG_FILE_LIST
+fi
 if [ -n "$ARG_PROJECT_PATH" ]
 then
     # 如果传入工程目录，工程目录是相对目录，则相对于本脚本工程目录
@@ -305,14 +318,12 @@ git commit --file ${PROJECT_PATH}/.git/COMMIT_EDITMSG
 }
 
 # 书写文档
-FILE_TO_WRITE_LIST=$(
-cat << EOF
-from-cli-args
-from-a-config-file
-EOF
-)
+if [ -n "$ARG_FILE_LIST" ]
+then
+    FILE_LIST=$(cat $(path_resolve $PROJECT_PATH $FILE_LIST))
+fi
 #echo $FILE_TO_WRITE_LIST
-FILE_TO_WRITE_LIST_ARR=(${FILE_TO_WRITE_LIST//,/ })  
+FILE_TO_WRITE_LIST_ARR=(${FILE_LIST//,/ })   
 for var in ${FILE_TO_WRITE_LIST_ARR[@]}
 do
    write_doc "$var" zh
