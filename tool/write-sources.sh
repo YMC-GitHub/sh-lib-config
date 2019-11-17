@@ -533,5 +533,5 @@ EOF
 
 
 # usage
-# ./tool/generate.sh --help
-# ./tool/generate.sh
+# ./tool/write-sources.sh --help
+# ./tool/write-sources.sh
