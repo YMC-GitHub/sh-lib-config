@@ -18,6 +18,8 @@ demo-with-args:
     ok:./write-helps.sh --project-dir=eth0
   passed arg with optional value
   passed arg without value
+  set the file list
+    ok:./write-helps.sh --file-list ./src/help.tpl.list
 how-to-get-help:
   ok:./write-helps.sh --help
   ok:./write-helps.sh -h
