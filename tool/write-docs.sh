@@ -79,7 +79,7 @@ echo $str2
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
 # source $THIS_FILE_PATH/path-resolve.sh
 # 工程目录信息
-PROJECT_DIR=$(path_resolve $THIS_FILE_PATH "../")
+PROJECT_PATH=$(path_resolve $THIS_FILE_PATH "../")
 HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
 SRC_DIR=$(path_resolve $THIS_FILE_PATH "../src")
 TEST_DIR=$(path_resolve $THIS_FILE_PATH "../test")
@@ -91,7 +91,7 @@ USAGE_MSG_PATH="$HELP_DIR"
 USAGE_MSG_FILE="${HELP_DIR}/write-docs.txt"
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d,"
-GETOPT_ARGS_LONG_RULE="--long help,debug,project-dir:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,project-path:"
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
 $GETOPT_ARGS_LONG_RULE -- "$@"`
@@ -101,8 +101,8 @@ eval set -- "$GETOPT_ARGS"
 while [ -n "$1" ]
 do
     case $1 in
-    --project-dir)
-    ARG_PROJECT_DIR=$2
+    --project-path)
+    ARG_PROJECT_PATH=$2
     shift 2
     ;;
     -h|--help)
@@ -126,26 +126,26 @@ done
 ouput_debug_msg "handle the rest args ..." "true"
 # 更新内置变量
 
-if [ -n "$ARG_PROJECT_DIR" ]
+if [ -n "$ARG_PROJECT_PATH" ]
 then
     # 如果传入工程目录，工程目录是相对目录，则相对于本脚本工程目录
-    PROJECT_DIR=$(path_resolve $PROJECT_DIR $ARG_PROJECT_DIR)
+    PROJECT_PATH=$(path_resolve $PROJECT_PATH $ARG_PROJECT_PATH)
     # 如果传入工程目录，工程目录是相对目录，则相对于执行本脚本的当前目录
-    #PROJECT_DIR=$(path_resolve $(pwd) $ARG_PROJECT_DIR)
+    #PROJECT_PATH=$(path_resolve $(pwd) $ARG_PROJECT_PATH)
     # 如果传入工程目录，工程目录是相对目录，则相对于本脚本所在目录
-    #PROJECT_DIR=$(path_resolve $THIS_FILE_PATH $ARG_PROJECT_DIR)
+    #PROJECT_PATH=$(path_resolve $THIS_FILE_PATH $ARG_PROJECT_PATH)
 fi
 # 输出内置变量
 ouput_debug_msg "ouput built-in var..." "true"
-#echo $PROJECT_DIR
+#echo $PROJECT_PATH
 # 计算相关变量
 ouput_debug_msg "caculate relations config ..." "true"
-HELP_DIR=$PROJECT_DIR/help
-SRC_DIR=$PROJECT_DIR/src
-TEST_DIR=$PROJECT_DIR/test
-DIST_DIR=$PROJECT_DIR/dist
-DOCS_DIR=$PROJECT_DIR/docs
-TOOL_DIR=$PROJECT_DIR//tool
+HELP_DIR=$PROJECT_PATH/help
+SRC_DIR=$PROJECT_PATH/src
+TEST_DIR=$PROJECT_PATH/test
+DIST_DIR=$PROJECT_PATH/dist
+DOCS_DIR=$PROJECT_PATH/docs
+TOOL_DIR=$PROJECT_PATH//tool
 
 
 #执行脚本目录
@@ -155,11 +155,11 @@ RUN_SCRIPT_PATH=$(pwd)
 #脚本工程目录
 #SCRIPT_PROJECT_PATH
 
-#echo  $PROJECT_DIR,$RUN_SCRIPT_PATH
+#echo  $PROJECT_PATH,$RUN_SCRIPT_PATH
 
 # 生成相关目录
 ouput_debug_msg "generate relations dir and file ..." "true"
-mkdir -p $PROJECT_DIR
+mkdir -p $PROJECT_PATH
 
 # 生成文档
 function write_doc(){
@@ -270,7 +270,7 @@ done
 
 # 生成（文档）文件readme.md头部
 function generate_docs_index_head(){
-cat > ${PROJECT_DIR}/readme.md <<EOF
+cat > ${PROJECT_PATH}/readme.md <<EOF
 # shell get config
 
 ## desc 
@@ -283,7 +283,7 @@ EOF
 function add_docs_index_to_readme(){
 DOC_FILE=$1
 DOC_LANG=$2
-cat >> ${PROJECT_DIR}/readme.md <<EOF
+cat >> ${PROJECT_PATH}/readme.md <<EOF
 ## $DOC_FILE
 
 how to use it with  developer? click below :
@@ -298,10 +298,10 @@ EOF
 
 # 更新基础（文档）文件交版本库
 function update_basic_docs_and_commit(){
-cat > ${PROJECT_DIR}/.git/COMMIT_EDITMSG <<EOF
+cat > ${PROJECT_PATH}/.git/COMMIT_EDITMSG <<EOF
 docs(core): updating basic docs
 EOF
-git commit --file ${PROJECT_DIR}/.git/COMMIT_EDITMSG
+git commit --file ${PROJECT_PATH}/.git/COMMIT_EDITMSG
 }
 
 # 书写文档
@@ -329,7 +329,7 @@ do
    git_add_docs_file "$var" zh
 done
 
-#git add ${PROJECT_DIR}/readme.md
+#git add ${PROJECT_PATH}/readme.md
 # 提交文档
 #update_basic_docs_and_commit
 

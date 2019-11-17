@@ -90,7 +90,7 @@ echo $str2
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
 # source $THIS_FILE_PATH/path-resolve.sh
 # 工程目录信息
-PROJECT_DIR=$(path_resolve $THIS_FILE_PATH "../")
+PROJECT_PATH=$(path_resolve $THIS_FILE_PATH "../")
 HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
 SRC_DIR=$(path_resolve $THIS_FILE_PATH "../src")
 TEST_DIR=$(path_resolve $THIS_FILE_PATH "../test")
@@ -102,7 +102,7 @@ USAGE_MSG_PATH="$HELP_DIR"
 USAGE_MSG_FILE="${HELP_DIR}/write-helps.txt"
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d,"
-GETOPT_ARGS_LONG_RULE="--long help,debug,file-list:,project-dir:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,file-list:,project-path:"
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
 $GETOPT_ARGS_LONG_RULE -- "$@"`
@@ -116,8 +116,8 @@ do
     ARG_FILE_LIST=$2
     shift 2
     ;;
-    --project-dir)
-    ARG_PROJECT_DIR=$2
+    --project-path)
+    ARG_PROJECT_PATH=$2
     shift 2
     ;;
     -h|--help)
@@ -144,27 +144,27 @@ if [ -n "$ARG_FILE_LIST" ]
 then
     FILE_LIST=$ARG_FILE_LIST
 fi
-if [ -n "$ARG_PROJECT_DIR" ]
+if [ -n "$ARG_PROJECT_PATH" ]
 then
     # 如果传入工程目录，工程目录是相对目录，则相对于本脚本工程目录
-    PROJECT_DIR=$(path_resolve $PROJECT_DIR $ARG_PROJECT_DIR)
+    PROJECT_PATH=$(path_resolve $PROJECT_PATH $ARG_PROJECT_PATH)
     # 如果传入工程目录，工程目录是相对目录，则相对于执行本脚本的当前目录
-    #PROJECT_DIR=$(path_resolve $(pwd) $ARG_PROJECT_DIR)
+    #PROJECT_PATH=$(path_resolve $(pwd) $ARG_PROJECT_PATH)
     # 如果传入工程目录，工程目录是相对目录，则相对于本脚本所在目录
-    #PROJECT_DIR=$(path_resolve $THIS_FILE_PATH $ARG_PROJECT_DIR)
+    #PROJECT_PATH=$(path_resolve $THIS_FILE_PATH $ARG_PROJECT_PATH)
 fi
 # 输出内置变量
 ouput_debug_msg "ouput built-in var..." "true"
-#echo $FILE_LIST,$PROJECT_DIR
+#echo $FILE_LIST,$PROJECT_PATH
 # 计算相关变量
 ouput_debug_msg "caculate relations config ..." "true"
 :<<delete-01
-HELP_DIR=$(path_resolve $PROJECT_DIR "../help")
-SRC_DIR=$(path_resolve $PROJECT_DIR "../src")
-TEST_DIR=$(path_resolve $PROJECT_DIR "../test")
-DIST_DIR=$(path_resolve $PROJECT_DIR "../dist")
-DOCS_DIR=$(path_resolve $PROJECT_DIR "../docs")
-TOOL_DIR=$(path_resolve $PROJECT_DIR "../tool")
+HELP_DIR=$(path_resolve $PROJECT_PATH "../help")
+SRC_DIR=$(path_resolve $PROJECT_PATH "../src")
+TEST_DIR=$(path_resolve $PROJECT_PATH "../test")
+DIST_DIR=$(path_resolve $PROJECT_PATH "../dist")
+DOCS_DIR=$(path_resolve $PROJECT_PATH "../docs")
+TOOL_DIR=$(path_resolve $PROJECT_PATH "../tool")
 delete-01
 # 生成相关目录
 ouput_debug_msg "generate relations dir and file ..." "true"
@@ -210,7 +210,7 @@ then
 fi
 if [[ -n "$2" ]]
 then
-    FILE_PATH=$(path_resolve $PROJECT_DIR $2)
+    FILE_PATH=$(path_resolve $PROJECT_PATH $2)
 fi
 
 # question:.help.txts  /d/code-store/Shell/shell-get-config/src/from-cli-args
@@ -236,7 +236,7 @@ cp -f $FILE_PATH/$FILE_NAME.help.txt help/$FILE_NAME.txt
 
 if [ -n "$ARG_FILE_LIST" ]
 then
-    FILE_LIST=$(cat $(path_resolve $PROJECT_DIR $FILE_LIST))
+    FILE_LIST=$(cat $(path_resolve $PROJECT_PATH $FILE_LIST))
 fi
 #echo "$FILE_LIST"
 
