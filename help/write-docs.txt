@@ -1,22 +1,28 @@
 desc:
   genarate basic sh file
 args:
-  --project-dir optional,set the project name
+  --project-path optional,set the project path
   -d,--debug optional,set the debug mode
   -h,--help optional,get the cmd help
 how-to-run:
   run as shell args
     bash ./write-docs.sh
   run as runable application
-    ./write-docs.sh --project-dir eth0
+    ./write-docs.sh --project-path eth0
 demo-with-args:
   without-args
     ok:./write-docs.sh 
   passed arg with necessary value
-    ok:./write-docs.sh --project-dir eth0
-    ok:./write-docs.sh --project-dir=eth0
+    ok:./write-docs.sh --project-path eth0
+    ok:./write-docs.sh --project-path=eth0
   passed arg with optional value
   passed arg without value
+  basic-usage:
+    set the project path
+      with relative path ,it relative to the project path
+        ok:./write-docs.sh --project-path ../hell-get-config
+      with absolute path
+        ok:./write-docs.sh --project-path /d/code-store/Shell/shell-get-config
 how-to-get-help:
   ok:./write-docs.sh --help
   ok:./write-docs.sh -h
