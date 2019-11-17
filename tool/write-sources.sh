@@ -4,8 +4,9 @@
 # 定义内置配置
 THIS_FILE_PATH=$(cd `dirname $0`; pwd)
 ARG_LIST=
-FILE_NAME=main
-FILE_PATH=$THIS_FILE_PATH
+PROJECT_PATH="../"
+FILE_PATH="tool"
+FILE_NAME="main"
 
 # 定义内置函数
 function ouput_debug_msg(){
@@ -22,11 +23,11 @@ then
     echo $debug_msg ; 
 fi
 }
-function path_resolve(){
-str1="${1}"
-str2="${2}"
-slpit_char1=/
-slpit_char2=/
+function path_resolve_for_relative(){
+local str1="${1}"
+local str2="${2}"
+local slpit_char1=/
+local slpit_char2=/
 if [[ -n ${3} ]]
 then
     slpit_char1=${3}
@@ -37,8 +38,8 @@ then
 fi
 
 # 路径-转为数组
-arr1=(${str1//$slpit_char1/ }) 
-arr2=(${str2//$slpit_char2/ }) 
+local arr1=(${str1//$slpit_char1/ }) 
+local arr2=(${str2//$slpit_char2/ }) 
 
 # 路径-解析拼接
 #2 遍历某一数组
@@ -46,7 +47,6 @@ arr2=(${str2//$slpit_char2/ })
 #2 获取数组长度
 #2 获取数组下标
 #2 数组元素赋值
-
 for val2 in ${arr2[@]}  
 do   
     length=${#arr1[@]}
@@ -64,38 +64,69 @@ do
     fi
 done
 # 路径-转为字符
-str2=''
+local str3=''
 for i in ${arr1[@]};do
-  str2=$str2/$i;
+  str3=$str3/$i;
 done
- if [ -z $str2 ] ; then str2="/"; fi
-echo $str2
+if [ -z $str3 ] ; then str3="/"; fi
+echo $str3
 }
+function path_resolve(){
+local str1="${1}"
+local str2="${2}"
+local slpit_char1=/
+local slpit_char2=/
+if [[ -n ${3} ]]
+then
+    slpit_char1=${3}
+fi
+if [[ -n ${4} ]]
+then
+    slpit_char2=${4}
+fi
+
+#FIX:when passed asboult path,dose not return the asboult path itself
+#str2="/d/"
+local str3=""
+str2=$(echo $str2 | sed "s#/\$##")
+ABSOLUTE_PATH_REG_PATTERN="^/"
+if [[ $str2 =~ $ABSOLUTE_PATH_REG_PATTERN ]] ; 
+then 
+    str3=$str2; 
+else
+    str3=$(path_resolve_for_relative $str1 $str2 $slpit_char1 $slpit_char2)
+fi
+echo $str3
+}
+PROJECT_PATH=$(path_resolve $THIS_FILE_PATH "../")
 
 # 文档帮助信息
 USAGE_MSG=$(cat<<EOF 
-genarate basic sh file
+desc:
+  genarate basic sh file
 args:
   --file-name optional,set the ouput file name
   --file-path optional,set the ouput file path
+  --project-path optional,set the project path
   -d,--debug optional,set the debug mode
   -h,--help optional,get the cmd help
-examples: 
+how-to-run:
   run as shell args
-bash ./generate.sh
+    bash ./write-sources.sh
   run as runable application
-./generate.sh --file-name eth0
-
-  without args: 
-./generate.sh 
-  with args: 
-./generate.sh --file-name eth0
-
-  with debug mode: 
-./generate.sh --debug
-
-get help: 
-./generate.sh --help
+    ./write-sources.sh --file-name eth0
+demo-with-args:
+  without-args
+    ok:./write-sources.sh 
+  passed arg with necessary value
+    ok:./write-sources.sh --file-name eth0
+    ok:./write-sources.sh --file-name=eth0
+  passed arg with optional value
+  passed arg without value
+how-to-get-help:
+  ok:./write-sources.sh --help
+  ok:./write-sources.sh -h
+  ok:./write-sources.sh --debug
 EOF
 )
 USAGE_MSG=$(cat<<EOF 
@@ -120,7 +151,7 @@ EOF
 
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d"
-GETOPT_ARGS_LONG_RULE="--long help,debug,file-name:,file-path:"
+GETOPT_ARGS_LONG_RULE="--long help,debug,file-name:,file-path:,project-path:"
 
 # 设置参数规则
 GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
@@ -136,6 +167,10 @@ do
     ;;
     --file-path)
     ARG_FILE_PATH=$2
+    shift 2
+    ;;
+    --project-path)
+    ARG_PROJECT_PATH=$2
     shift 2
     ;;
     -h|--help) #可选，不接参数
@@ -161,20 +196,57 @@ if [ -n "$ARG_FILE_NAME" ]
 then
     FILE_NAME=$ARG_FILE_NAME
 fi
+if [ -n "$ARG_PROJECT_PATH" ]
+then
+    PROJECT_PATH=$ARG_PROJECT_PATH
+fi
 if [ -n "$ARG_FILE_PATH" ]
 then
-    FILE_PATH=$(path_resolve $FILE_PATH $ARG_FILE_PATH)
+    FILE_PATH=$ARG_FILE_PATH
 fi
-# 计算相关变量
-OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
+
+#echo $PROJECT_PATH
 # 工程目录信息
-PROJECT_DIR=$(path_resolve $THIS_FILE_PATH "../")
-HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
-SRC_DIR=$(path_resolve $THIS_FILE_PATH "../src")
-TEST_DIR=$(path_resolve $THIS_FILE_PATH "../test")
-DIST_DIR=$(path_resolve $THIS_FILE_PATH "../dist")
-DOCS_DIR=$(path_resolve $THIS_FILE_PATH "../docs")
-TOOL_DIR=$(path_resolve $THIS_FILE_PATH "../tool")
+PROJECT_PATH=$(path_resolve $THIS_FILE_PATH $PROJECT_PATH)
+HELP_DIR=$PROJECT_PATH/help
+SRC_DIR=$PROJECT_PATH/src
+TEST_DIR=$PROJECT_PATH/test
+DIST_DIR=$PROJECT_PATH/dist
+DOCS_DIR=$PROJECT_PATH/docs
+TOOL_DIR=$PROJECT_PATH/tool
+
+# 计算相关变量
+FILE_PATH=$(path_resolve $PROJECT_PATH $FILE_PATH)
+OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
+debug_msg=$(cat << EOF
+args:
+ARG_PROJECT_PATH:
+$ARG_PROJECT_PATH
+ARG_FILE_PATH:
+$ARG_FILE_PATH
+ARG_FILE_NAME:
+$ARG_FILE_NAME
+
+
+PROJECT_PATH:
+$PROJECT_PATH
+FILE_PATH:
+$FILE_PATH
+FILE_NAME:
+$FILE_NAME
+OUTPUT_FILE:
+$OUTPUT_FILE
+THIS_FILE_PATH:
+$THIS_FILE_PATH
+
+SRC_DIR:
+$SRC_DIR
+EOF
+)
+#echo "$debug_msg" >> debug-log.txt
+#exit 1
+
+
 
 # add multi line text to a var
 ouput_debug_msg "生成输入文件 ..." "true"
