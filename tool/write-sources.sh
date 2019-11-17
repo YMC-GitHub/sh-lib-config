@@ -167,13 +167,51 @@ then
 fi
 # 计算相关变量
 OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
+# 工程目录信息
+PROJECT_DIR=$(path_resolve $THIS_FILE_PATH "../")
+HELP_DIR=$(path_resolve $THIS_FILE_PATH "../help")
+SRC_DIR=$(path_resolve $THIS_FILE_PATH "../src")
+TEST_DIR=$(path_resolve $THIS_FILE_PATH "../test")
+DIST_DIR=$(path_resolve $THIS_FILE_PATH "../dist")
+DOCS_DIR=$(path_resolve $THIS_FILE_PATH "../docs")
+TOOL_DIR=$(path_resolve $THIS_FILE_PATH "../tool")
 
 # add multi line text to a var
 ouput_debug_msg "生成输入文件 ..." "true"
+:<<delete-code-ARG_LIST_DESC
 ARG_LIST_DESC=$(cat<<ARG-LIST-EOF
   --project-dir optional,passed arg with necessary value
 ARG-LIST-EOF
 )
+delete-code-ARG_LIST_DESC
+function get_file_part(){
+local FLAG_SYMBOL=desc
+if [[ -n "$1" ]]
+then
+    FLAG_SYMBOL=$1
+fi
+# the begining flag of the section
+local BeginFlag="<$FLAG_SYMBOL>"
+# the ending flag of the section
+local EndFlag="<$FLAG_SYMBOL/>"
+
+local Bnum=
+local Enum=
+local nums=
+FILE=$SRC_DIR/$FILE_NAME.help.tpl #$1
+# line number of the beginning flag
+Bnum=$(grep -n "$BeginFlag" $FILE | cut -d: -f1)
+# line number of the ending flag
+Enum=$(grep -n "$EndFlag" $FILE | cut -d: -f1)
+# lines between the begining and ending flag
+nums=$(($Enum-$Bnum))
+#echo $Bnum,$Enum,$nums
+# output the result into stdout
+PART_CONTENT=$(grep -A $nums "$BeginFlag" $FILE|sed "s#<$FLAG_SYMBOL>#$FLAG_SYMBOL:#" |sed "s#<$FLAG_SYMBOL/>##" )
+echo "$PART_CONTENT"
+}
+ARG_LIST_DESC=$(get_file_part args | sed "/^args:*/d")
+ARG_LIST_DESC=$(echo "$ARG_LIST_DESC" | sed "/^ *-d,--debug.*/d"|sed "/^ *-h,--help.*/d")
 ARG_LIST=$(echo "$ARG_LIST_DESC" |sed "s/-.,//g" |sed "s/optional.*//g")
 #echo "$ARG_LIST_DESC"
 #echo "$ARG_LIST"
