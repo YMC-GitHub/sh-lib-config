@@ -322,7 +322,8 @@ if [ -n "$ARG_FILE_LIST" ]
 then
     FILE_LIST=$(cat $(path_resolve $PROJECT_PATH $FILE_LIST))
 fi
-#echo $FILE_TO_WRITE_LIST
+#echo "$FILE_LIST"
+
 FILE_TO_WRITE_LIST_ARR=(${FILE_LIST//,/ })   
 for var in ${FILE_TO_WRITE_LIST_ARR[@]}
 do
