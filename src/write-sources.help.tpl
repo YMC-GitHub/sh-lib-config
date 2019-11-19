@@ -1,0 +1,43 @@
+<desc>
+  genarate basic sh file
+<desc/>
+<args>
+  --file-name optional,set the ouput file name
+  --file-path optional,set the ouput file path
+  --project-path optional,set the project path
+  -d,--debug optional,set the debug mode
+  -h,--help optional,get the cmd help
+<args/>
+<how-to-run>
+  run as shell args
+    bash ./write-sources.sh
+  run as runable application
+    ./write-sources.sh --file-name eth0
+<how-to-run/>
+<demo-with-args>
+  without-args
+    ok:./write-sources.sh 
+  passed arg with necessary value
+    ok:./write-sources.sh --file-name eth0
+    ok:./write-sources.sh --file-name=eth0
+  passed arg with optional value
+  passed arg without value
+  basic-usage:
+    set the project path
+      with relative path ,it relative to the project path
+        ok:./write-sources.sh --project-path ../hell-get-config
+      with absolute path
+        ok:./write-sources.sh --project-path /d/code-store/Shell/shell-get-config
+    set the file path
+      with relative path ,it relative to the project path
+        ok:./write-sources.sh --file-path tool
+      with absolute path
+        ok:./write-sources.sh --file-path /d/code-store/Shell/shell-get-config/tool
+    set the file name
+        ok:./write-sources.sh --file-name main
+<demo-with-args/>
+<how-to-get-help>
+  ok:./write-sources.sh --help
+  ok:./write-sources.sh -h
+  ok:./write-sources.sh --debug
+<how-to-get-help/>
