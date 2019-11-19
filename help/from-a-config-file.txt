@@ -24,3 +24,7 @@ how-to-get-help:
   ok:./from-a-config-file.sh --help
   ok:./from-a-config-file.sh -h
   ok:./from-a-config-file.sh --debug
+debug-log:
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt --no-built-in "yes"
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt --no-built-in "yes" --file-path "dist"

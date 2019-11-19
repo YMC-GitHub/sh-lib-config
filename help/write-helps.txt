@@ -9,13 +9,13 @@ how-to-run:
   run as shell args
     bash ./write-helps.sh
   run as runable application
-    ./write-helps.sh path eth0
+    ./write-helps.sh --project-path eth0
 demo-with-args:
   without-args
     ok:./write-helps.sh 
   passed arg with necessary value
-    ok:./write-helps.sh path eth0
-    ok:./write-helps.sh path=eth0
+    ok:./write-helps.sh --project-path eth0
+    ok:./write-helps.sh --project-path=eth0
   passed arg with optional value
   passed arg without value
   basic-usage:
