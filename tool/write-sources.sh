@@ -1,107 +1,122 @@
 #!/bin/sh
 
-
 # 定义内置配置
-THIS_FILE_PATH=$(cd `dirname $0`; pwd)
+THIS_FILE_PATH=$(
+  cd $(dirname $0)
+  pwd
+)
 ARG_LIST=
 PROJECT_PATH="../"
 FILE_PATH="tool"
 FILE_NAME="main"
 
 # 定义内置函数
-function ouput_debug_msg(){
-local debug_msg=$1
-local debug_swith=$2
-if [[ "$debug_swith" =~ "false" ]] ; 
-then 
-    echo $debug_msg > /dev/null 2>&1
-elif [ -n "$debug_swith" ]
-then
-    echo $debug_msg ; 
-elif [[ "$debug_swith" =~ "true" ]] ; 
-then
-    echo $debug_msg ; 
-fi
+function ouput_debug_msg() {
+  local debug_msg=$1
+  local debug_swith=$2
+  if [[ "$debug_swith" =~ "false" ]]; then
+    echo $debug_msg >/dev/null 2>&1
+  elif [ -n "$debug_swith" ]; then
+    echo $debug_msg
+  elif [[ "$debug_swith" =~ "true" ]]; then
+    echo $debug_msg
+  fi
 }
-function path_resolve_for_relative(){
-local str1="${1}"
-local str2="${2}"
-local slpit_char1=/
-local slpit_char2=/
-if [[ -n ${3} ]]
-then
+function path_resolve_for_relative() {
+  local str1="${1}"
+  local str2="${2}"
+  local slpit_char1=/
+  local slpit_char2=/
+  if [[ -n ${3} ]]; then
     slpit_char1=${3}
-fi
-if [[ -n ${4} ]]
-then
+  fi
+  if [[ -n ${4} ]]; then
     slpit_char2=${4}
-fi
+  fi
 
-# 路径-转为数组
-local arr1=(${str1//$slpit_char1/ }) 
-local arr2=(${str2//$slpit_char2/ }) 
+  # 路径-转为数组
+  local arr1=(${str1//$slpit_char1/ })
+  local arr2=(${str2//$slpit_char2/ })
 
-# 路径-解析拼接
-#2 遍历某一数组
-#2 删除元素取值
-#2 获取数组长度
-#2 获取数组下标
-#2 数组元素赋值
-for val2 in ${arr2[@]}  
-do   
+  # 路径-解析拼接
+  #2 遍历某一数组
+  #2 删除元素取值
+  #2 获取数组长度
+  #2 获取数组下标
+  #2 数组元素赋值
+  for val2 in ${arr2[@]}; do
     length=${#arr1[@]}
-    if [ $val2 = ".." ]
-    then
-        index=$[$length-1]
-        if [ $index -le 0 ] ; then index=0; fi
-        unset arr1[$index]  
-        #echo ${arr1[*]}
-        #echo  $index
+    if [ $val2 = ".." ]; then
+      index=$(($length - 1))
+      if [ $index -le 0 ]; then index=0; fi
+      unset arr1[$index]
+      #echo ${arr1[*]}
+      #echo  $index
     else
-        index=$length
-        arr1[$index]=$val2
-        #echo ${arr1[*]}
+      index=$length
+      arr1[$index]=$val2
+      #echo ${arr1[*]}
     fi
-done
-# 路径-转为字符
-local str3=''
-for i in ${arr1[@]};do
-  str3=$str3/$i;
-done
-if [ -z $str3 ] ; then str3="/"; fi
-echo $str3
+  done
+  # 路径-转为字符
+  local str3=''
+  for i in ${arr1[@]}; do
+    str3=$str3/$i
+  done
+  if [ -z $str3 ]; then str3="/"; fi
+  echo $str3
 }
-function path_resolve(){
-local str1="${1}"
-local str2="${2}"
-local slpit_char1=/
-local slpit_char2=/
-if [[ -n ${3} ]]
-then
+function path_resolve() {
+  local str1="${1}"
+  local str2="${2}"
+  local slpit_char1=/
+  local slpit_char2=/
+  if [[ -n ${3} ]]; then
     slpit_char1=${3}
-fi
-if [[ -n ${4} ]]
-then
+  fi
+  if [[ -n ${4} ]]; then
     slpit_char2=${4}
-fi
+  fi
 
-#FIX:when passed asboult path,dose not return the asboult path itself
-#str2="/d/"
-local str3=""
-str2=$(echo $str2 | sed "s#/\$##")
-ABSOLUTE_PATH_REG_PATTERN="^/"
-if [[ $str2 =~ $ABSOLUTE_PATH_REG_PATTERN ]] ; 
-then 
-    str3=$str2; 
-else
+  #FIX:when passed asboult path,dose not return the asboult path itself
+  #str2="/d/"
+  local str3=""
+  str2=$(echo $str2 | sed "s#/\$##")
+  ABSOLUTE_PATH_REG_PATTERN="^/"
+  if [[ $str2 =~ $ABSOLUTE_PATH_REG_PATTERN ]]; then
+    str3=$str2
+  else
     str3=$(path_resolve_for_relative $str1 $str2 $slpit_char1 $slpit_char2)
-fi
-echo $str3
+  fi
+  echo $str3
 }
-PROJECT_PATH=$(path_resolve $THIS_FILE_PATH "../")
-
+function get_help_msg() {
+  local USAGE_MSG=$1
+  local USAGE_MSG_FILE=$2
+  if [ -n $USAGE_MSG ]; then
+    echo "$USAGE_MSG"
+  elif [ -n $USAGE_MSG_FILE && -e $USAGE_MSG_FILE ]; then
+    #cat $USAGE_MSG_FILE
+    echo "has help file"
+  else
+    echo "no help msg and file"
+  fi
+}
+function get_help_msg() {
+  local USAGE_MSG=$1
+  local USAGE_MSG_FILE=$2
+  if [ -z $USAGE_MSG ]; then
+    if [[ -n $USAGE_MSG_FILE && -e $USAGE_MSG_FILE ]]; then
+      USAGE_MSG=$(cat $USAGE_MSG_FILE)
+    else
+      USAGE_MSG="no help msg and file"
+    fi
+  fi
+  echo "$USAGE_MSG"
+}
 # 文档帮助信息
-USAGE_MSG=$(cat<<EOF 
+USAGE_MSG=$(
+  cat <<EOF
 desc:
   genarate basic sh file
 args:
@@ -117,7 +132,7 @@ how-to-run:
     ./write-sources.sh --file-name eth0
 demo-with-args:
   without-args
-    ok:./write-sources.sh 
+    ok:./write-sources.sh
   passed arg with necessary value
     ok:./write-sources.sh --file-name eth0
     ok:./write-sources.sh --file-name=eth0
@@ -129,10 +144,11 @@ how-to-get-help:
   ok:./write-sources.sh --debug
 EOF
 )
-USAGE_MSG=$(cat<<EOF 
+USAGE_MSG=$(
+  cat <<EOF
 $USAGE_MSG
 
-basic usage: 
+basic usage:
  set the file name
 ./generate.sh --file-name main
 
@@ -148,65 +164,67 @@ FILE_PATH=
 EOF
 )
 
-
 # 参数规则内容
 GETOPT_ARGS_SHORT_RULE="--options h,d"
 GETOPT_ARGS_LONG_RULE="--long help,debug,file-name:,file-path:,project-path:"
 
 # 设置参数规则
-GETOPT_ARGS=`getopt $GETOPT_ARGS_SHORT_RULE \
-$GETOPT_ARGS_LONG_RULE -- "$@"`
+GETOPT_ARGS=$(
+  getopt $GETOPT_ARGS_SHORT_RULE \
+  $GETOPT_ARGS_LONG_RULE -- "$@"
+)
 # 解析参数规则
 eval set -- "$GETOPT_ARGS"
-while [ -n "$1" ]
-do
-    case $1 in
-    --file-name)
+while [ -n "$1" ]; do
+  case $1 in
+  --file-name)
     ARG_FILE_NAME=$2
     shift 2
     ;;
-    --file-path)
+  --file-path)
     ARG_FILE_PATH=$2
     shift 2
     ;;
-    --project-path)
+  --project-path)
     ARG_PROJECT_PATH=$2
     shift 2
     ;;
-    -h|--help) #可选，不接参数
+  -h | --help) #可选，不接参数
     echo "$USAGE_MSG"
     exit 1
     ;;
-    -d|--debug) #可选，不接参数
+  -d | --debug) #可选，不接参数
     IS_DEBUG_MODE=true
     shift 2
     ;;
-    --)
+  --)
     break
     ;;
-    *)
+  *)
     echo "$USAGE_MSG"
     ;;
-    esac
+  esac
 done
 # 处理剩余参数
 
 # 更新内置变量
-if [ -n "$ARG_FILE_NAME" ]
-then
-    FILE_NAME=$ARG_FILE_NAME
+if [ -n "$ARG_FILE_NAME" ]; then
+  FILE_NAME=$ARG_FILE_NAME
 fi
-if [ -n "$ARG_PROJECT_PATH" ]
-then
-    PROJECT_PATH=$ARG_PROJECT_PATH
+if [ -n "$ARG_PROJECT_PATH" ]; then
+  PROJECT_PATH=$ARG_PROJECT_PATH
 fi
-if [ -n "$ARG_FILE_PATH" ]
-then
-    FILE_PATH=$ARG_FILE_PATH
+if [ -n "$ARG_FILE_PATH" ]; then
+  FILE_PATH=$ARG_FILE_PATH
 fi
 
-#echo $PROJECT_PATH
-# 工程目录信息
+###
+#输出配置信息
+###
+# below generated by write-sources.sh
+
+# 脚本主要代码
+# add multi line text to a var
 PROJECT_PATH=$(path_resolve $THIS_FILE_PATH $PROJECT_PATH)
 HELP_DIR=$PROJECT_PATH/help
 SRC_DIR=$PROJECT_PATH/src
@@ -214,107 +232,116 @@ TEST_DIR=$PROJECT_PATH/test
 DIST_DIR=$PROJECT_PATH/dist
 DOCS_DIR=$PROJECT_PATH/docs
 TOOL_DIR=$PROJECT_PATH/tool
-
-# 计算相关变量
 FILE_PATH=$(path_resolve $PROJECT_PATH $FILE_PATH)
+mkdir -p $FILE_PATH
 OUTPUT_FILE=$FILE_PATH/$FILE_NAME.sh
-debug_msg=$(cat << EOF
-args:
-ARG_PROJECT_PATH:
-$ARG_PROJECT_PATH
-ARG_FILE_PATH:
-$ARG_FILE_PATH
-ARG_FILE_NAME:
-$ARG_FILE_NAME
 
+ouput_debug_msg "生成输入文件 ..." "true"
 
-PROJECT_PATH:
-$PROJECT_PATH
-FILE_PATH:
-$FILE_PATH
-FILE_NAME:
-$FILE_NAME
-OUTPUT_FILE:
-$OUTPUT_FILE
-THIS_FILE_PATH:
-$THIS_FILE_PATH
+function get_file_part() {
+  local FLAG_SYMBOL=desc
+  local FILE_SUFFIX=.help.tpl
+  if [[ -n "$1" ]]; then
+    FLAG_SYMBOL=$1
+  fi
+  if [[ -n "$2" ]]; then
+    FILE_SUFFIX=$2
+  fi
+  # the begining flag of the section
+  local BeginFlag="<$FLAG_SYMBOL>"
+  # the ending flag of the section
+  local EndFlag="<$FLAG_SYMBOL/>"
 
-SRC_DIR:
-$SRC_DIR
+  local Bnum=
+  local Enum=
+  local nums=
+  FILE=$SRC_DIR/${FILE_NAME}${FILE_SUFFIX} #$1
+  # line number of the beginning flag
+  Bnum=$(grep -n "$BeginFlag" $FILE | cut -d: -f1)
+  # line number of the ending flag
+  Enum=$(grep -n "$EndFlag" $FILE | cut -d: -f1)
+  # lines between the begining and ending flag
+  nums=$(($Enum - $Bnum))
+  #echo $Bnum,$Enum,$nums
+  # output the result into stdout
+  PART_CONTENT=$(grep -A $nums "$BeginFlag" $FILE | sed "s#<$FLAG_SYMBOL>#$FLAG_SYMBOL:#" | sed "s#<$FLAG_SYMBOL/>##")
+  echo "$PART_CONTENT"
+}
+
+# ./tool/debug.sh --file-name write-sources
+
+declare -A DIC_CODE_LIST
+DIC_CODE_LIST=()
+
+CODE_LIST_DESC=
+string=$(
+  cat <<EOF
+core_file_head
+core_define_built_in_var
+core_define_built_in_fun
+core_include_commom_code
+core_arg_help_msg
+core_arg_rule_content
+core_set_arg_rule
+core_parse_arg_rule
+core_handle_the_rest_arg
+core_update_built_in_var
+core_print_config_info
+core_main_code
 EOF
 )
-#echo "$debug_msg" >> debug-log.txt
-#exit 1
+#echo $string
+REG_SHELL_COMMOMENT_PATTERN="^#"
+array=(${string//,/ })
 
+CODE_LIST_DESC=
+for var in ${array[@]}; do
+  if [[ "$var" =~ $REG_SHELL_COMMOMENT_PATTERN ]]; then
+    echo "$var" >/dev/null 2>&1
+  else
+    temp=$(get_file_part $var .sh.dist.tpl | sed "/^$var:*/d")
+    CODE_LIST_DESC=$(
+      cat <<EOF
+$CODE_LIST_DESC
+$temp
+EOF
+    )
+    DIC_CODE_LIST+=([$var]=$temp)
+  fi
+done
+#echo "$CODE_LIST_DESC"
 
-
-# add multi line text to a var
-ouput_debug_msg "生成输入文件 ..." "true"
-:<<delete-code-ARG_LIST_DESC
-ARG_LIST_DESC=$(cat<<ARG-LIST-EOF
-  --project-dir optional,passed arg with necessary value
-ARG-LIST-EOF
-)
-delete-code-ARG_LIST_DESC
-function get_file_part(){
-local FLAG_SYMBOL=desc
-if [[ -n "$1" ]]
-then
-    FLAG_SYMBOL=$1
-fi
-# the begining flag of the section
-local BeginFlag="<$FLAG_SYMBOL>"
-# the ending flag of the section
-local EndFlag="<$FLAG_SYMBOL/>"
-
-local Bnum=
-local Enum=
-local nums=
-FILE=$SRC_DIR/$FILE_NAME.help.tpl #$1
-# line number of the beginning flag
-Bnum=$(grep -n "$BeginFlag" $FILE | cut -d: -f1)
-# line number of the ending flag
-Enum=$(grep -n "$EndFlag" $FILE | cut -d: -f1)
-# lines between the begining and ending flag
-nums=$(($Enum-$Bnum))
-#echo $Bnum,$Enum,$nums
-# output the result into stdout
-PART_CONTENT=$(grep -A $nums "$BeginFlag" $FILE|sed "s#<$FLAG_SYMBOL>#$FLAG_SYMBOL:#" |sed "s#<$FLAG_SYMBOL/>##" )
-echo "$PART_CONTENT"
-}
-ARG_LIST_DESC=$(get_file_part args | sed "/^args:*/d")
-ARG_LIST_DESC=$(echo "$ARG_LIST_DESC" | sed "/^ *-d,--debug.*/d"|sed "/^ *-h,--help.*/d")
-ARG_LIST=$(echo "$ARG_LIST_DESC" |sed "s/-.,//g" |sed "s/optional.*//g")
+ARG_LIST_DESC=$(get_file_part args .help.tpl | sed "/^args:*/d")
+ARG_LIST_DESC=$(echo "$ARG_LIST_DESC" | sed "/^ *-d,--debug.*/d" | sed "/^ *-h,--help.*/d")
+ARG_LIST=$(echo "$ARG_LIST_DESC" | sed "s/-.,//g" | sed "s/optional.*//g")
 #echo "$ARG_LIST_DESC"
 #echo "$ARG_LIST"
 
-ARG_SHORT_LONG_MAP=$(echo "$ARG_LIST_DESC" |sed "s/optional.*//g"| sed "s/ *//g"| sed "s/,/=/g")
+ARG_SHORT_LONG_MAP=$(echo "$ARG_LIST_DESC" | sed "s/optional.*//g" | sed "s/ *//g" | sed "s/,/=/g")
 #echo "$ARG_SHORT_LONG_MAP"
 
 declare -A DIC_ARG_SHORT_LONG_MAP
 DIC_ARG_SHORT_LONG_MAP=()
-test=`echo $ARG_SHORT_LONG_MAP`
+test=$(echo $ARG_SHORT_LONG_MAP)
 #echo $test
-
 slpit_char=" "
 #字符转为数组
-arr=(${test//$slpit_char/ }) 
+arr=(${test//$slpit_char/ })
 key=
 value=
 for i in "${arr[@]}"; do
-    
-    # 获取键值：小写+中划
-    value=`echo $i |cut -d "=" -f 1 |tr "[:upper:]" "[:lower:]" |sed "s/-//g"`
-    # 获取键名:小写
-    key=`echo $i |cut -d "=" -f 2|tr "[:upper:]" "[:lower:]" |sed "s/--//g"`
-    #echo $key,$value
-    length=${#value}
-    if [ $length -gt 1 ]
-    then
-        echo "not short arg" > /dev/null 2>&1
-    else
-        DIC_ARG_SHORT_LONG_MAP+=([$key]=$value)
-    fi
+
+  # 获取键值：小写+中划
+  value=$(echo $i | cut -d "=" -f 1 | tr "[:upper:]" "[:lower:]" | sed "s/-//g")
+  # 获取键名:小写
+  key=$(echo $i | cut -d "=" -f 2 | tr "[:upper:]" "[:lower:]" | sed "s/--//g")
+  #echo $key,$value
+  length=${#value}
+  if [ $length -gt 1 ]; then
+    echo "not short arg" >/dev/null 2>&1
+  else
+    DIC_ARG_SHORT_LONG_MAP+=([$key]=$value)
+  fi
 done
 #echo "${DIC_ARG_SHORT_LONG_MAP['sdate']}"
 
@@ -322,187 +349,48 @@ ouput_debug_msg "读取输入文件 ..." "true"
 declare -A dic
 #设置二维数组
 dic=()
-test=`echo "$ARG_LIST"`
+test=$(echo "$ARG_LIST")
 #字符转为数组
 arr=($test)
 key=
 value=
 for i in "${arr[@]}"; do
-    # 获取键名:小写+中划
-    key=`echo $i|tr "[:upper:]" "[:lower:]"  | sed "s/--//g"`
-    # 获取键值：大写+下划+前缀
-    value=`echo $i|tr "[:lower:]" "[:upper:]" | sed "s/--/ARG_/g" |sed "s/-/_/g"`
-    dic+=([$key]=$value)
+  # 获取键名:小写+中划
+  key=$(echo $i | tr "[:upper:]" "[:lower:]" | sed "s/--//g")
+  # 获取键值：大写+下划+前缀
+  value=$(echo $i | tr "[:lower:]" "[:upper:]" | sed "s/--/ARG_/g" | sed "s/-/_/g")
+  dic+=([$key]=$value)
 done
-
-ouput_debug_msg "生成相关内容 ..." "true"
-echo "#!/bin/sh" > $OUTPUT_FILE
-
-ouput_debug_msg "文档它是什么" "true"
-cat >> $OUTPUT_FILE << EOF
-#### 它是什么
-# 
-
-EOF
-
-ouput_debug_msg "文档为什么要" "true"
-cat >> $OUTPUT_FILE << EOF
-#### 为什么要
-# 
-
-EOF
-
-ouput_debug_msg "文档如何进行" "true"
-cat >> $OUTPUT_FILE << EOF
-#### 如何进行
-# 
-
-EOF
-
-ouput_debug_msg "定义内置变量" "true"
-cat >> $OUTPUT_FILE << EOF
-# 定义内置变量
-# ...
-EOF
-
-ouput_debug_msg "定义内置函数" "true"
-cat >> $OUTPUT_FILE << EOF
-# 定义内置函数
-# ...
-function ouput_debug_msg(){
-local debug_msg=\$1
-local debug_swith=\$2
-if [[ "\$debug_swith" =~ "false" ]] ; 
-then 
-    echo \$debug_msg > /dev/null 2>&1
-elif [ -n "\$debug_swith" ]
-then
-    echo \$debug_msg ; 
-elif [[ "\$debug_swith" =~ "true" ]] ; 
-then
-    echo \$debug_msg ; 
-fi
-}
-
-function path_resolve(){
-str1="\${1}"
-str2="\${2}"
-slpit_char1=/
-slpit_char2=/
-if [[ -n \${3} ]]
-then
-    slpit_char1=\${3}
-fi
-if [[ -n \${4} ]]
-then
-    slpit_char2=\${4}
-fi
-# 路径-转为数组
-arr1=(\${str1//\$slpit_char1/ }) 
-arr2=(\${str2//\$slpit_char2/ }) 
-
-# 路径-解析拼接
-#2 遍历某一数组
-#2 删除元素取值
-#2 获取数组长度
-#2 获取数组下标
-#2 数组元素赋值
-
-for val2 in \${arr2[@]}  
-do   
-    length=\${#arr1[@]}
-    if [ \$val2 = ".." ]
-    then
-        index=\$[\$length-1]
-        if [ \$index -le 0 ] ; then index=0; fi
-        unset arr1[\$index]  
-        #echo \${arr1[*]}
-        #echo  \$index
-    else
-        index=\$length
-        arr1[\$index]=\$val2
-        #echo \${arr1[*]}
-    fi
-done
-# 路径-转为字符
-str2=''
-for i in \${arr1[@]};do
-  str2=\$str2/\$i;
-done
- if [ -z \$str2 ] ; then str2="/"; fi
-echo \$str2
-}
-EOF
-
-
-ouput_debug_msg "引入相关文件" "true"
-cat >> $OUTPUT_FILE << EOF
-# 引入相关文件
-THIS_FILE_PATH=\$(cd \`dirname \$0\`; pwd)
-# source \$THIS_FILE_PATH/path-resolve.sh
-EOF
-
-ouput_debug_msg "工程目录信息" "true"
-cat >> $OUTPUT_FILE << EOF
-# 工程目录信息
-PROJECT_PATH=\$(path_resolve \$THIS_FILE_PATH "../")
-HELP_DIR=\$(path_resolve \$THIS_FILE_PATH "../help")
-SRC_DIR=\$(path_resolve \$THIS_FILE_PATH "../src")
-TEST_DIR=\$(path_resolve \$THIS_FILE_PATH "../test")
-DIST_DIR=\$(path_resolve \$THIS_FILE_PATH "../dist")
-DOCS_DIR=\$(path_resolve \$THIS_FILE_PATH "../docs")
-TOOL_DIR=\$(path_resolve \$THIS_FILE_PATH "../tool")
-EOF
-
-ouput_debug_msg "参数帮助信息" "true"
-cat >> $OUTPUT_FILE << EOF
-# 参数帮助信息
-USAGE_MSG_PATH="\$HELP_DIR"
-USAGE_MSG_FILE="\${HELP_DIR}/$FILE_NAME.txt"
-EOF
 
 ouput_debug_msg "参数规则内容" "true"
 ARGS_RULE_SHORT_TXT=
-for i in $(echo ${DIC_ARG_SHORT_LONG_MAP[*]})
-do
-    # 小写
-    key=`echo $i|tr "[:upper:]" "[:lower:]"`
-    ARGS_RULE_SHORT_TXT="${ARGS_RULE_SHORT_TXT}${key}:,"
+for i in $(echo ${DIC_ARG_SHORT_LONG_MAP[*]}); do
+  # 小写
+  key=$(echo $i | tr "[:upper:]" "[:lower:]")
+  ARGS_RULE_SHORT_TXT="${ARGS_RULE_SHORT_TXT}${key}:,"
 done
 ARGS_RULE_SHORT_TXT=$(echo $ARGS_RULE_SHORT_TXT | sed "s/,$//g")
 
 ARGS_RULE_TXT=""
-for i in $(echo ${!dic[*]})
-do
-    # 小写+中划
-    key=`echo $i|tr "[:upper:]" "[:lower:]"  | sed "s/--//g"`
-    ARGS_RULE_TXT="${ARGS_RULE_TXT}${key}:,"
+for i in $(echo ${!dic[*]}); do
+  # 小写+中划
+  key=$(echo $i | tr "[:upper:]" "[:lower:]" | sed "s/--//g")
+  ARGS_RULE_TXT="${ARGS_RULE_TXT}${key}:,"
 done
 ARGS_RULE_TXT=$(echo $ARGS_RULE_TXT | sed "s/,$//g")
-
-ARGS_RULE_TXT=$(cat<<ARG-LIST-EOF
-GETOPT_ARGS_SHORT_RULE="--options h,d,$ARGS_RULE_SHORT_TXT"
-GETOPT_ARGS_LONG_RULE="--long help,debug,$ARGS_RULE_TXT"
-ARG-LIST-EOF
-)
-cat >> $OUTPUT_FILE << EOF
-# 参数规则内容
-$ARGS_RULE_TXT
-EOF
-#echo "$ARGS_RULE_TXT" >> $OUTPUT_FILE
-
+ARGS_RULE_TXT=$(echo "${DIC_CODE_LIST["core_arg_rule_content"]}" | sed "s/\$ARGS_RULE_SHORT_TXT/$ARGS_RULE_SHORT_TXT/g" | sed "s/\$ARGS_RULE_TXT/$ARGS_RULE_TXT/g")
+#swap_var="${DIC_CODE_LIST["core_arg_rule_content"]}"
+DIC_CODE_LIST["core_arg_rule_content"]="$ARGS_RULE_TXT"
+#echo "${DIC_CODE_LIST["core_arg_rule_content"]}"
+#exit 1
 
 ouput_debug_msg "设置参数规则" "true"
-SET_ARGS_RULE_TXT=
-#echo "$SET_ARGS_RULE_TXT"
-cat >> $OUTPUT_FILE << EOF
-# 设置参数规则
-GETOPT_ARGS=\`getopt \$GETOPT_ARGS_SHORT_RULE \\
-\$GETOPT_ARGS_LONG_RULE -- "\$@"\`
-EOF
+#echo "${DIC_CODE_LIST["core_set_arg_rule"]}"
+#exit 1
 
 ouput_debug_msg "解析参数规则" "true"
-PARSE_ARGS_TXT=$(cat<<ARG-LIST-EOF
+PARSE_ARGS_TXT=$(
+  cat <<ARG-LIST-EOF
 while [ -n "\$1" ]
 do
     case \$1 in
@@ -510,36 +398,35 @@ ARG-LIST-EOF
 )
 #echo "$PARSE_ARGS_TXT"
 
-for i in $(echo ${!dic[*]})
-do
-    # 小写+中划
-    key="$i"
-    # 大写+下划+前缀
-    val=${dic[$i]}
-    short_val=${DIC_ARG_SHORT_LONG_MAP[$key]}
-    if [ -n "$short_val" ] ; 
-    then 
+for i in $(echo ${!dic[*]}); do
+  # 小写+中划
+  key="$i"
+  # 大写+下划+前缀
+  val=${dic[$i]}
+  short_val=${DIC_ARG_SHORT_LONG_MAP[$key]}
+  if [ -n "$short_val" ]; then
 
-        key="-$short_val|--$key";
-    else
-        key="--$key";
-    fi
-    #echo $key
-    PARSE_ARGS_TXT=$(cat<<ARG-LIST-EOF
+    key="-$short_val|--$key"
+  else
+    key="--$key"
+  fi
+  #echo $key
+  PARSE_ARGS_TXT=$(
+    cat <<ARG-LIST-EOF
 $PARSE_ARGS_TXT
     $key)
     $val=\$2
     shift 2
     ;;
 ARG-LIST-EOF
-)
+  )
 done
 
-PARSE_ARGS_TXT=$(cat<<ARG-LIST-EOF
+PARSE_ARGS_TXT=$(
+  cat <<ARG-LIST-EOF
 $PARSE_ARGS_TXT
     -h|--help)
-    #echo "\$USAGE_MSG_FILE"
-    cat \$USAGE_MSG_FILE
+    echo "\$USAGE_MSG"
     exit 1
     ;;
     -d|--debug)
@@ -556,92 +443,94 @@ $PARSE_ARGS_TXT
 done
 ARG-LIST-EOF
 )
-cat >> $OUTPUT_FILE << EOF
-# 解析参数规则
-ouput_debug_msg "pasre cli args ..." "true"
-eval set -- "\$GETOPT_ARGS"
+
+swap_var="${DIC_CODE_LIST["core_parse_arg_rule"]}"
+PARSE_ARGS_TXT=$(
+  cat <<EOF
+$swap_var
 $PARSE_ARGS_TXT
 EOF
-#echo "$PARSE_ARGS_TXT"  >> $OUTPUT_FILE
+)
+DIC_CODE_LIST["core_parse_arg_rule"]="$PARSE_ARGS_TXT"
+#echo "${DIC_CODE_LIST["core_parse_arg_rule"]}"
+#exit 1
 
-cat >> $OUTPUT_FILE << EOF
-# 处理剩余参数
-ouput_debug_msg "handle the rest args ..." "true"
-EOF
-
-
+ouput_debug_msg "处理其余参数" "true"
+#echo "${DIC_CODE_LIST["core_handle_the_rest_arg"]}"
+#exit 1
 
 ouput_debug_msg "更新内置变量" "true"
-for i in $(echo ${!dic[*]})
-do
-    # 大写+下滑
-    key=`echo $i|tr "[:lower:]" "[:upper:]" | sed "s/-/_/g"`
-    # 大写+下划+前缀
-    val=${dic[$i]}
-    UPDATE_BUILT_IN_CONFIG_TXT=$(cat<<UPDATE-BUILT-IN-CONFIG
+for i in $(echo ${!dic[*]}); do
+  # 大写+下滑
+  key=$(echo $i | tr "[:lower:]" "[:upper:]" | sed "s/-/_/g")
+  # 大写+下划+前缀
+  val=${dic[$i]}
+  UPDATE_BUILT_IN_CONFIG_TXT=$(
+    cat <<UPDATE-BUILT-IN-CONFIG
 $UPDATE_BUILT_IN_CONFIG_TXT
 if [ -n "\$$val" ]
 then
     $key=\$$val
 fi
 UPDATE-BUILT-IN-CONFIG
-)
+  )
 done
 
-#echo "# 更新内置变量" >> $OUTPUT_FILE
-#echo "$UPDATE_BUILT_IN_CONFIG_TXT"  >> $OUTPUT_FILE
-cat >> $OUTPUT_FILE << EOF
-# 更新内置变量
+swap_var="${DIC_CODE_LIST["core_update_built_in_var"]}"
+DIC_CODE_LIST["core_update_built_in_var"]=$(
+  cat <<EOF
+$swap_var
 $UPDATE_BUILT_IN_CONFIG_TXT
 EOF
+)
+#echo "${DIC_CODE_LIST["core_update_built_in_var"]}"
+#echo "${DIC_CODE_LIST[@]}"
+#exit 1
 
-ouput_debug_msg "输出内置变量" "true"
+ouput_debug_msg "输出配置信息" "true"
 BUIT_IN_VAR_TXT=
-for i in $(echo ${!dic[*]})
-do
-    # 大写+下滑
-    key=`echo $i|tr "[:lower:]" "[:upper:]" | sed "s/-/_/g"`
-    BUIT_IN_VAR_TXT="${BUIT_IN_VAR_TXT},${key}"
+for i in $(echo ${!dic[*]}); do
+  # 大写+下滑
+  key=$(echo $i | tr "[:lower:]" "[:upper:]" | sed "s/-/_/g")
+  BUIT_IN_VAR_TXT="${BUIT_IN_VAR_TXT},${key}"
 done
-BUIT_IN_VAR_TXT=$(echo $BUIT_IN_VAR_TXT | sed "s/,/,$/g" |sed "s/^,//g" )
-#echo $BUIT_IN_VAR_TXT
-
-cat >> $OUTPUT_FILE << EOF
-# 输出内置变量
-ouput_debug_msg "ouput built-in var..." "true"
+BUIT_IN_VAR_TXT=$(echo $BUIT_IN_VAR_TXT | sed "s/,/,$/g" | sed "s/^,//g")
+BUIT_IN_VAR_TXT=$(
+  cat <<EOF
+${DIC_CODE_LIST["core_print_config_info"]}
 echo $BUIT_IN_VAR_TXT
 EOF
+)
+DIC_CODE_LIST["core_print_config_info"]="$BUIT_IN_VAR_TXT"
+#echo "${DIC_CODE_LIST["core_print_config_info"]}"
+#exit 1
 
-ouput_debug_msg "计算相关变量" "true"
-cat >> $OUTPUT_FILE << EOF
-# 计算相关变量
-ouput_debug_msg "caculate relations config ..." "true"
+ouput_debug_msg "脚本主要代码" "true"
+#echo "${DIC_CODE_LIST["core_main_code"]}"
+#exit 1
+
+MY_CODE=
+for var in ${array[@]}; do
+  if [[ "$var" =~ $REG_SHELL_COMMOMENT_PATTERN ]]; then
+    echo "$var" >/dev/null 2>&1
+  else
+    #echo "$var"
+    #echo "${DIC_CODE_LIST[$var]}"
+    MY_CODE=$(
+      cat <<EOF
+$MY_CODE
+${DIC_CODE_LIST[$var]}
 EOF
+    )
+  fi
+done
 
-ouput_debug_msg "生成相关目录" "true"
-cat >> $OUTPUT_FILE << EOF
-# 生成相关目录
-ouput_debug_msg "generate relations dir and file ..." "true"
-EOF
-
-
-ouput_debug_msg "文档基本用法" "true"
-cat >> $OUTPUT_FILE << EOF
-#### usage
-# bash ./$FILE_NAME.sh
-
-EOF
-
-ouput_debug_msg "文档参考文献" "true"
-cat >> $OUTPUT_FILE << EOF
-#### 参考文献
-:<<reference
-# 
-
-reference
-EOF
-
+#echo "$MY_CODE" >$OUTPUT_FILE
+echo "write codes to $OUTPUT_FILE"
+echo "$MY_CODE" >$OUTPUT_FILE
 
 # usage
 # ./tool/write-sources.sh --help
 # ./tool/write-sources.sh
+# ./tool/debug.sh --file-name write-sources --file-path debug
+# ./debug/write-sources.sh --help
