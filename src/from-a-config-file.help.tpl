@@ -1,0 +1,35 @@
+<desc>
+  read config from a file
+<desc/>
+<args>
+  --custom-file optional,set the custom config file name
+  --built-in-file optional,set the built in config file name
+  --no-built-in optional,set the built in config switch
+  --file-path optional,set the custom config file path
+  --project-path optional,set the project path
+  -h,--help optional,get the cmd help
+<args/>
+<how-to-run>
+  run as shell args
+    bash ./from-a-config-file.sh
+  run as runable application
+    ./from-a-config-file.sh --custom-file=a-config-file-2.txt
+<how-to-run/>
+<demo-with-args>
+  without args:
+    ok:./from-a-config-file.sh
+  passed arg with necessary value:
+    ok:./from-a-config-file.sh --custom-file=a-config-file-2.txt
+    ok:./from-a-config-file.sh --custom-file a-config-file-2.txt
+  passed arg with optional value
+  passed arg without value
+<demo-with-args/>
+<how-to-get-help>
+  ok:./from-a-config-file.sh --help
+  ok:./from-a-config-file.sh -h
+  ok:./from-a-config-file.sh --debug
+debug-log:
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt --no-built-in "yes"
+  ok:./debug/from-a-config-file.sh --custom-file=a-config-file-2.txt --no-built-in "yes" --file-path "dist"
+<how-to-get-help/>
