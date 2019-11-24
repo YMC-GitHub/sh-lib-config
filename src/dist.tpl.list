@@ -1,0 +1,12 @@
+core_file_head
+core_define_built_in_var
+core_define_built_in_fun
+core_include_commom_code
+core_arg_help_msg
+core_arg_rule_content
+core_set_arg_rule
+core_parse_arg_rule
+core_handle_the_rest_arg
+core_update_built_in_var
+core_print_config_info
+core_main_code

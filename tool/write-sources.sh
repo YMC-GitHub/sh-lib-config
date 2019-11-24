@@ -171,7 +171,7 @@ GETOPT_ARGS_LONG_RULE="--long help,debug,file-name:,file-path:,project-path:"
 # 设置参数规则
 GETOPT_ARGS=$(
   getopt $GETOPT_ARGS_SHORT_RULE \
-  $GETOPT_ARGS_LONG_RULE -- "$@"
+    $GETOPT_ARGS_LONG_RULE -- "$@"
 )
 # 解析参数规则
 eval set -- "$GETOPT_ARGS"
@@ -274,22 +274,7 @@ declare -A DIC_CODE_LIST
 DIC_CODE_LIST=()
 
 CODE_LIST_DESC=
-string=$(
-  cat <<EOF
-core_file_head
-core_define_built_in_var
-core_define_built_in_fun
-core_include_commom_code
-core_arg_help_msg
-core_arg_rule_content
-core_set_arg_rule
-core_parse_arg_rule
-core_handle_the_rest_arg
-core_update_built_in_var
-core_print_config_info
-core_main_code
-EOF
-)
+string=$(cat "$SRC_DIR/dist.tpl.list")
 #echo $string
 REG_SHELL_COMMOMENT_PATTERN="^#"
 array=(${string//,/ })
