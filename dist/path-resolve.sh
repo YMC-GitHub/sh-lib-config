@@ -34,6 +34,9 @@ do
         unset arr1[$index]  
         #echo ${arr1[*]}
         #echo  $index
+    elif [ $val2 = "." ]
+    then
+        echo "it is current file" > /dev/null 2>&1
     else
         index=$length
         arr1[$index]=$val2
