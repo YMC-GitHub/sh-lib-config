@@ -15,7 +15,7 @@ THIS_FILE_PATH=$(
   cd $(dirname $0)
   pwd
 )
-FILE_PATH=$THIS_FILE_PATH       #the default is relative tp the peoject dir
+FILE_PATH=$THIS_FILE_PATH       #the default is relative to the peoject dir
 PROJECT_PATH="../"              #the default is relative to this file path
 BUILT_IN_FILE=a-config-file.txt #
 ###
