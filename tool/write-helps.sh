@@ -215,7 +215,7 @@ function get_part() {
   declare -i Bnum
   declare -i Enum
   declare -i nums
-  FILE=$FILE_PATH/$FILE_NAME.help.tpl #$1
+  FILE=$FILE_PATH/$FILE_NAME.help.txt #$1
   # line number of the beginning flag
   Bnum=$(grep -n "$BeginFlag" $FILE | cut -d: -f1)
   # line number of the ending flag

@@ -240,7 +240,7 @@ ouput_debug_msg "生成输入文件 ..." "true"
 
 function get_file_part() {
   local FLAG_SYMBOL=desc
-  local FILE_SUFFIX=.help.tpl
+  local FILE_SUFFIX=.help.txt
   if [[ -n "$1" ]]; then
     FLAG_SYMBOL=$1
   fi
@@ -284,7 +284,7 @@ for var in ${array[@]}; do
   if [[ "$var" =~ $REG_SHELL_COMMOMENT_PATTERN ]]; then
     echo "$var" >/dev/null 2>&1
   else
-    temp=$(get_file_part $var .sh.dist.tpl | sed "/^$var:*/d")
+    temp=$(get_file_part $var .sh.dist.txt | sed "/^$var:*/d")
     CODE_LIST_DESC=$(
       cat <<EOF
 $CODE_LIST_DESC
@@ -296,7 +296,7 @@ EOF
 done
 #echo "$CODE_LIST_DESC"
 
-ARG_LIST_DESC=$(get_file_part args .help.tpl | sed "/^args:*/d")
+ARG_LIST_DESC=$(get_file_part args .help.txt | sed "/^args:*/d")
 ARG_LIST_DESC=$(echo "$ARG_LIST_DESC" | sed "/^ *-d,--debug.*/d" | sed "/^ *-h,--help.*/d")
 ARG_LIST=$(echo "$ARG_LIST_DESC" | sed "s/-.,//g" | sed "s/optional.*//g")
 #echo "$ARG_LIST_DESC"
