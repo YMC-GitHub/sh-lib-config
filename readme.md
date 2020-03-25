@@ -1,23 +1,58 @@
-# shell get config
+# sh lib config
 
-## desc 
+## desc
 
-shell script get config lib
-## from-cli-args
+curd config for ymc shell code
 
-how to use it with  developer? click below :
+## feat
 
-[en](./docs/how-to-use-for-dev/from-cli-args.md) ,[zh](./docs/how-to-use-for-dev/zh/from-cli-args.md)
+- [x] read config for sh arg
+- [x] read config for sh config file
+- [x] support built-in config file
+- [x] support custom config file
+- [x] support help msg
 
-how to use it with  production user?  click below :
+## how to use for poduction ?
 
-[en](./docs/how-to-use-for-pro/from-cli-args.md) ,[zh](./docs/how-to-use-for-pro/zh/from-cli-args.md)
-## from-a-config-file
+```sh
+# get the code
 
-how to use it with  developer? click below :
+# run the index file
+# ./dist/index.sh
 
-[en](./docs/how-to-use-for-dev/from-a-config-file.md) ,[zh](./docs/how-to-use-for-dev/zh/from-a-config-file.md)
+# or import to your sh file
+# source /path/to/the/index file
 
-how to use it with  production user?  click below :
+# usage
+USAGE_MSG=
+USAGE_MSG_PATH=$(path_resolve $THIS_FILE_PATH "../help")
+USAGE_MSG_FILE=${USAGE_MSG_PATH}/index.txt
 
-[en](./docs/how-to-use-for-pro/from-a-config-file.md) ,[zh](./docs/how-to-use-for-pro/zh/from-a-config-file.md)
+# get args val
+GETOPT_ARGS_SHORT_RULE="--options h,d,"
+GETOPT_sARGS_LONG_RULE="--long help,debug,not-built-in:,custom-file:"
+cache_args "$@"
+
+cache_read_built_in_config
+
+CUSTOM_FILE=$(cache_get_val_by_key "custom-file")
+cache_read_custom_config "" "dist" "$CUSTOM_FILE"
+cache_ouput_val
+```
+
+## how to use for developer ?
+
+```sh
+# get the code
+
+# run test
+./test/test-cache.sh
+```
+
+## author
+
+yemiancheng <ymc.github@gmail.com>
+
+## license
+
+MIT
