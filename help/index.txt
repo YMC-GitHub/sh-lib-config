@@ -1,0 +1,35 @@
+desc:
+  sh lib config
+args:
+  --project-path optional,set the project path
+  --file-list optional,set the tpl list file name
+  -d,--debug optional,set the debug mode
+  -h,--help optional,get the cmd help
+how-to-run:
+  run as shell args
+    bash ./dist/index.sh
+  run as runable application
+    ./dist/index.sh --project-path eth0
+demo-with-args:
+  without-args
+    ok:./dist/index.sh
+  passed arg with necessary value
+    ok:./dist/index.sh --project-path eth0
+    ok:./dist/index.sh --project-path=eth0
+  passed arg with optional value
+  passed arg without value
+  basic-usage:
+    set the file name (tpl list file)
+      with relative path ,it relative to the project path
+        ok:./dist/index.sh --file-list ./src/help.tpl.list
+      with absolute path
+        ok:./dist/index.sh --file-list /d/help.tpl.list
+    set the project dir
+      with relative path ,it relative to the project path
+        ok:./dist/index.sh path ../hell-get-config
+      with absolute path
+        ok:./dist/index.sh path /d/code-store/Shell/shell-get-config
+how-to-get-help:
+  ok:./dist/index.sh --help
+  ok:./dist/index.sh -h
+  ok:./dist/index.sh --debug
