@@ -18,4 +18,4 @@ cache_get_val_by_key "k8s-worker-4"
 cache_get_val_by_key "custom-file"
 cache_get_val_by_key "k8s-worker-7"
 ## file usage
-#./test/test-cache.sh --custom-file a-config-file-2.txt
+#./test/test.index.sh --custom-file a-config-file-2.txt
