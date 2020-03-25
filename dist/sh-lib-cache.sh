@@ -1,7 +1,16 @@
 #!/bin/sh
 
-declare -A aa403a
-aa403a=()
+#declare -A aa403a
+# check if val exists
+: <<note
+if [ ! $aa403a ]; then
+  #echo "not ok"
+  aa403a=()
+else
+  echo "ok"
+fi
+note
+[ ! $aa403a ] && aa403a=()
 # get cache dic var name by md5
 #echo -n 'cache_dic'|md5sum|cut -d ' ' -f1|cut -c 1-6
 # get cache dic var name by base64

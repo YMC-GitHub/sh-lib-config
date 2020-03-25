@@ -29,8 +29,8 @@ cache_set_val "name" "k8s-worker-5"
 cache_set_val "name" "null"
 cache_get_val "name"
 
-#source "${PROJECT_PATH}/dist/sh-lib-cache.sh"
-#cache_get_val "name"
+source "${PROJECT_PATH}/dist/sh-lib-cache.sh"
+cache_get_val "name"
 
 : <<NOTE
 test 'cache_set_val "name" "null"' ""
