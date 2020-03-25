@@ -2,10 +2,11 @@ THIS_FILE_PATH=$(
   cd $(dirname $0)
   pwd
 )
-source "${THIS_FILE_PATH}/sh-lib-cache.sh"
-source "${THIS_FILE_PATH}/config.project.dir.map.sh"
-source "${THIS_FILE_PATH}/sh-lib-help-msg.sh"
-source "${THIS_FILE_PATH}/sh-lib-path-resolve.sh"
+source "$THIS_FILE_PATH/sh-lib-path-resolve.sh"
+PROJECT_PATH=$(path_resolve "$THIS_FILE_PATH" "../")
+source "${PROJECT_PATH}/dist/config.project.dir.map.sh"
+source "${DIST_DIR}/sh-lib-cache.sh"
+source "${DIST_DIR}/sh-lib-help-msg.sh"
 
 USAGE_MSG=
 USAGE_MSG_PATH=$(path_resolve $THIS_FILE_PATH "../help")

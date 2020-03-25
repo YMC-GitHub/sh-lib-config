@@ -3,8 +3,12 @@ THIS_FILE_PATH=$(
   cd $(dirname $0)
   pwd
 )
-source "${THIS_FILE_PATH}/parse-passed-arg.sh"
-source "${THIS_FILE_PATH}/read-from-file.sh"
+source "$THIS_FILE_PATH/sh-lib-path-resolve.sh"
+PROJECT_PATH=$(path_resolve "$THIS_FILE_PATH" "../")
+#DIST_DIR=$(path_resolve "$PROJECT_PATH" "dist)
+source "${PROJECT_PATH}/dist/config.project.dir.map.sh"
+source "${DIST_DIR}/parse-passed-arg.sh"
+source "${DIST_DIR}/read-from-file.sh"
 
 : <<simple-usage
 USAGE_MSG=

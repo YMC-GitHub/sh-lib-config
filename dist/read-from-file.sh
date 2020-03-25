@@ -4,12 +4,13 @@ THIS_FILE_PATH=$(
   cd $(dirname $0)
   pwd
 )
+source "$THIS_FILE_PATH/sh-lib-path-resolve.sh"
+PROJECT_PATH=$(path_resolve "$THIS_FILE_PATH" "../")
+source "${PROJECT_PATH}/dist/config.project.dir.map.sh"
+source "${DIST_DIR}/sh-lib-cache.sh"
+source "${DIST_DIR}/sh-lib-help-msg.sh"
+source "${DIST_DIR}/sh-lib-output-msg.sh"
 
-source "${THIS_FILE_PATH}/sh-lib-output-msg.sh"
-source "${THIS_FILE_PATH}/sh-lib-path-resolve.sh"
-source "${THIS_FILE_PATH}/sh-lib-help-msg.sh"
-source "${THIS_FILE_PATH}/sh-lib-cache.sh"
-source "${THIS_FILE_PATH}/config.project.dir.map.sh"
 FILE_PATH=$THIS_FILE_PATH       #the default is relative tp the peoject dir
 BUILT_IN_FILE=a-config-file.txt #
 
