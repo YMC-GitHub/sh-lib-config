@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#declare -A aa403a
+declare -A aa403a
 # check if val exists
 : <<note
 if [ ! $aa403a ]; then
@@ -10,7 +10,20 @@ else
   echo "ok"
 fi
 note
-[ ! $aa403a ] && aa403a=()
+#[ !$aa403a ] && aa403a=()
+declare -A arr
+arr=()
+${aa403a:- $arr}
+#${aa403a:= $arr}
+#aa403a=${aa403a:-()}
+#or?
+#aa403a=${aa403a:- aa403a}
+#or
+: <<note
+declare -A arr
+arr=()
+aa403a=${aa403a:- arr}
+note
 # get cache dic var name by md5
 #echo -n 'cache_dic'|md5sum|cut -d ' ' -f1|cut -c 1-6
 # get cache dic var name by base64
@@ -134,9 +147,31 @@ function cache_get_val_by_key() {
   echo "$temp"
 }
 function cache_ouput_val() {
+  local dic=
+  if [ -n "$1" ]; then
+    dic="$1"
+  fi
   echo "config file all key: "
   echo ${!aa403a[*]}
   # 输出整个配置文件的键值
   echo "config file all val: "
   echo ${aa403a[*]}
+}
+function cache_clone() {
+  local key=
+  local val=
+  local dic=
+  dic=()
+  for key in $(echo ${!aa403a[*]}); do
+    val=${aa403a[$key]}
+    : <<note
+    if [[ "$key" != "0" && "$val" != "()" ]]; then
+      dic+=(["$key"]="$val")
+    fi
+note
+    if [ "$key" != "0" ]; then
+      dic+=(["$key"]="$val")
+    fi
+  done
+  echo "$dic"
 }
