@@ -6,11 +6,12 @@ curd config for ymc shell code
 
 ## feat
 
-- [x] read config for sh arg
-- [x] read config for sh config file
+- [x] read config from sh arg
+- [x] read config from sh config file
 - [x] support built-in config file
 - [x] support custom config file
 - [x] support help msg
+- [x] support not built-in config file
 
 ## how to use for poduction ?
 
@@ -46,7 +47,7 @@ cache_ouput_val
 # get the code
 
 # run test
-./test/test-cache.sh
+./test/test.index.sh
 ```
 
 ## author
